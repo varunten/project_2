@@ -1,0 +1,51 @@
+@model QuotesDto
+@{
+    ViewData["Title"] = "Review quotes";
+}
+
+<h2>Quotes awaiting review</h2>
+<p class="text-muted">
+    These quotes have been accepted by the customer. Approving one issues the policy.
+</p>
+
+@if (Model.Total == 0)
+{
+    <p class="text-muted">Nothing to review right now.</p>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Quote #</th>
+                <th>Product</th>
+                <th>Coverage</th>
+                <th>Premium</th>
+                <th>Quoted</th>
+                <th>Valid until</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var quote in Model.Quotes)
+            {
+                <tr>
+                    <td>@quote.QuoteNumber</td>
+                    <td>@quote.ProductName</td>
+                    <td>@quote.CoverageAmount.ToString("N0")</td>
+                    <td>@quote.PremiumAmount.ToString("N2")</td>
+                    <td>@quote.QuoteDate.ToString("yyyy-MM-dd")</td>
+                    <td>@quote.ValidUntil.ToString("yyyy-MM-dd")</td>
+                    <td class="text-nowrap">
+                        <form asp-action="Approve" asp-route-id="@quote.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                        </form>
+                        <form asp-action="Reject" asp-route-id="@quote.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Reject</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

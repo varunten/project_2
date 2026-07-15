@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="ipms.BAL/ipms.BAL.csproj" />
+  <Project Path="ipms.DAL/ipms.DAL.csproj" />
+  <Project Path="ipms.DTO/ipms.DTO.csproj" />
+  <Project Path="ipms.MVC/ipms.MVC.csproj" />
+  <Project Path="ipms/ipms.csproj" />
+</Solution>

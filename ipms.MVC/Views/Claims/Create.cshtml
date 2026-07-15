@@ -1,0 +1,37 @@
+@model CreateClaimDto
+@{
+    ViewData["Title"] = "File a claim";
+}
+
+<h2>File a claim</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+            <input type="hidden" asp-for="PolicyId" />
+
+            <div class="mb-3">
+                <label asp-for="IncidentDate" class="form-label">Incident date</label>
+                <input asp-for="IncidentDate" type="date" class="form-control" />
+                <span asp-validation-for="IncidentDate" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ClaimAmount" class="form-label">Claim amount</label>
+                <input asp-for="ClaimAmount" class="form-control" />
+                <span asp-validation-for="ClaimAmount" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Reason" class="form-label">Reason</label>
+                <textarea asp-for="Reason" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Reason" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">File claim</button>
+            <a asp-controller="Policies" asp-action="Index" class="btn btn-link">Cancel</a>
+        </form>
+    </div>
+</div>

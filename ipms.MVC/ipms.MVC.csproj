@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Only the DTO project: the UI reuses the API's request/response shapes.
+         It deliberately does NOT reference ipms.BAL or ipms.DAL - the UI talks
+         to the API over HTTP and knows nothing about the database. -->
+    <ProjectReference Include="..\ipms.DTO\ipms.DTO.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Only used to read the roles out of the JWT so the menu can show the
+         right links. The API still does the real enforcement. -->
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
+  </ItemGroup>
+
+</Project>

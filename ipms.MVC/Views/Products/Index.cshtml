@@ -1,0 +1,52 @@
+@model ProductsDto
+@{
+    ViewData["Title"] = "Products";
+}
+
+<h2>Insurance products</h2>
+
+@if (Model.Total == 0)
+{
+    <p class="text-muted">No products are available right now.</p>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Coverage</th>
+                <th>Base premium</th>
+                <th>Ages</th>
+                <th>Term</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model.Products)
+            {
+                <tr>
+                    <td>
+                        @product.Name
+                        @if (!string.IsNullOrEmpty(product.Description))
+                        {
+                            <br />
+                            <small class="text-muted">@product.Description</small>
+                        }
+                    </td>
+                    <td>@product.Type</td>
+                    <td>@product.CoverageAmount.ToString("N0")</td>
+                    <td>@product.BasePremium.ToString("N2")</td>
+                    <td>@product.MinAge - @product.MaxAge</td>
+                    <td>@product.PolicyTermYears yrs</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary"
+                           asp-controller="Quotes" asp-action="Create"
+                           asp-route-productId="@product.Id">Request a quote</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

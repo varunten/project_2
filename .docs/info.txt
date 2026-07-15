@@ -1,0 +1,50 @@
+IPMS - quick reference
+======================
+
+RUNNING THE PROJECT (needs TWO terminals - the API and the UI are separate apps)
+
+  Terminal 1 - the API (must be started first, the UI calls it):
+      dotnet run --project ipms --launch-profile http
+      -> http://localhost:5128
+      -> API docs (Scalar): http://localhost:5128/scalar/v1
+
+  Terminal 2 - the MVC website:
+      dotnet run --project ipms.MVC --launch-profile http
+      -> http://localhost:5146     <- open this one in your browser
+
+  Stop either app with Ctrl+C in its terminal.
+
+
+LOGINS
+
+  Admin (seeded automatically on first run):
+      admin@ipms.local / Admin@123
+      - creates products, creates staff accounts
+
+  Customers: sign up on the website.
+
+  Staff (underwriter / agent): created by the admin via
+      POST /api/auth/staff        (create a new staff user)
+      POST /api/auth/users/{id}/roles   (promote an existing user)
+
+
+DATABASE (SQL Server Express, instance .\SQLEXPRESS, database InsuranceAPIDB)
+
+  One-time per machine:
+      dotnet tool install --global dotnet-ef --version 10.0.9
+
+  Create / update the database from the migrations:
+      dotnet ef database update --project ipms.DAL --startup-project ipms
+
+  After changing an entity, add a new migration then apply it:
+      dotnet ef migrations add <Name> --project ipms.DAL --startup-project ipms --output-dir Migrations
+      dotnet ef database update --project ipms.DAL --startup-project ipms
+
+  Connection string lives in ipms/appsettings.json.
+  To start over from scratch: drop the InsuranceAPIDB database, then run
+  "database update" again (roles + admin are re-seeded on app start).
+
+
+BUILD
+
+      dotnet build project_ipms.slnx

@@ -1,0 +1,63 @@
+@model QuotesDto
+@{
+    ViewData["Title"] = "My quotes";
+}
+
+<h2>My quotes</h2>
+
+@if (Model.Total == 0)
+{
+    <p class="text-muted">
+        You have no quotes yet.
+        <a asp-controller="Products" asp-action="Index">Browse products</a> to request one.
+    </p>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Quote #</th>
+                <th>Product</th>
+                <th>Coverage</th>
+                <th>Premium</th>
+                <th>Valid until</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var quote in Model.Quotes)
+            {
+                <tr>
+                    <td>@quote.QuoteNumber</td>
+                    <td>@quote.ProductName</td>
+                    <td>@quote.CoverageAmount.ToString("N0")</td>
+                    <td>@quote.PremiumAmount.ToString("N2")</td>
+                    <td>@quote.ValidUntil.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <span class="badge bg-secondary">@quote.Status</span>
+                    </td>
+                    <td>
+                        @if (quote.Status == QuoteStatus.Requested)
+                        {
+                            <form asp-action="Accept" asp-route-id="@quote.Id" method="post">
+                                <button type="submit" class="btn btn-sm btn-success">Accept</button>
+                            </form>
+                        }
+                        else if (quote.Status == QuoteStatus.AcceptedByCustomer)
+                        {
+                            <small class="text-muted">Waiting for underwriter</small>
+                        }
+                        else if (quote.Status == QuoteStatus.Approved)
+                        {
+                            <a asp-controller="Policies" asp-action="Index" class="btn btn-sm btn-outline-primary">
+                                View policy
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

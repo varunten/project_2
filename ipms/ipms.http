@@ -1,0 +1,190 @@
+@host = http://localhost:5128/api
+
+### Health check (no auth)
+GET {{host}}/health
+
+### Sign up a customer
+POST {{host}}/auth/signup
+Content-Type: application/json
+
+{
+  "firstName": "Alice",
+  "email": "alice@test.com",
+  "phoneNumber": "1111111111",
+  "password": "Passw0rd!",
+  "passwordConfirm": "Passw0rd!"
+}
+
+### Log in as the customer (captures the token for the calls below)
+# @name customerLogin
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "alice@test.com",
+  "password": "Passw0rd!"
+}
+
+@customerToken = {{customerLogin.response.body.data.accessToken}}
+
+### Log in as the seeded admin
+# @name adminLogin
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@ipms.local",
+  "password": "Admin@123"
+}
+
+@adminToken = {{adminLogin.response.body.data.accessToken}}
+
+### Admin creates a product
+# @name createProduct
+POST {{host}}/product
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "Term Life Gold",
+  "type": 2,
+  "coverageAmount": 100000,
+  "basePremium": 500,
+  "minAge": 18,
+  "maxAge": 65,
+  "policyTermYears": 10,
+  "description": "10 year term life"
+}
+
+@productId = {{createProduct.response.body.data.id}}
+
+### Admin creates an underwriter
+POST {{host}}/auth/staff
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "firstName": "Uma",
+  "email": "uw@ipms.local",
+  "phoneNumber": "3333333333",
+  "password": "Passw0rd!",
+  "role": "Underwriter"
+}
+
+### Admin promotes an existing user by id (assign a role)
+POST {{host}}/auth/users/00000000-0000-0000-0000-000000000000/roles
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "role": "InsuranceAgent"
+}
+
+### Customer creates their profile
+POST {{host}}/customer
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "dateOfBirth": "1990-05-20",
+  "gender": 0,
+  "maritalStatus": 0,
+  "ssn": "123-45-6789",
+  "address": { "city": "Austin", "state": "TX", "zipCode": "78701" }
+}
+
+### Customer browses products
+GET {{host}}/product
+Authorization: Bearer {{customerToken}}
+
+### Customer requests a quote
+# @name createQuote
+POST {{host}}/quote
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "productId": "{{productId}}",
+  "coverageAmount": 50000
+}
+
+@quoteId = {{createQuote.response.body.data.id}}
+
+### Customer accepts the quote
+PATCH {{host}}/quote/{{quoteId}}/accept
+Authorization: Bearer {{customerToken}}
+
+### Underwriter logs in
+# @name uwLogin
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "uw@ipms.local",
+  "password": "Passw0rd!"
+}
+
+@uwToken = {{uwLogin.response.body.data.accessToken}}
+
+### Underwriter approves the quote -> issues a policy
+# @name approveQuote
+PATCH {{host}}/quote/{{quoteId}}/approve
+Authorization: Bearer {{uwToken}}
+
+@policyId = {{approveQuote.response.body.data.id}}
+
+### Customer views their policies
+GET {{host}}/policy
+Authorization: Bearer {{customerToken}}
+
+### Admin creates a premium installment for the policy
+# @name createPremium
+POST {{host}}/premiumpayment
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "policyId": "{{policyId}}",
+  "installmentNumber": "1",
+  "frequency": 0,
+  "premiumAmount": 250,
+  "penaltyAmount": 0,
+  "dueDate": "2026-08-01"
+}
+
+@paymentId = {{createPremium.response.body.data.id}}
+
+### Customer pays the premium
+POST {{host}}/premiumpayment/{{paymentId}}/pay
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "amountPaid": 250,
+  "paymentMethod": 2
+}
+
+### Customer files a claim
+# @name createClaim
+POST {{host}}/claim
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "policyId": "{{policyId}}",
+  "incidentDate": "2026-07-01",
+  "claimAmount": 10000,
+  "reason": "Hospitalization"
+}
+
+@claimId = {{createClaim.response.body.data.id}}
+
+### Underwriter reviews / approves the claim
+PATCH {{host}}/claim/{{claimId}}
+Content-Type: application/json
+Authorization: Bearer {{uwToken}}
+
+{
+  "status": 3,
+  "notes": "Approved after review"
+}

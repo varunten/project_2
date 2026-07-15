@@ -1,0 +1,57 @@
+@model ClaimsDto
+@{
+    ViewData["Title"] = "My claims";
+}
+
+<h2>My claims</h2>
+
+@if (Model.Total == 0)
+{
+    <p class="text-muted">
+        You have not filed any claims. You can file one from
+        <a asp-controller="Policies" asp-action="Index">your policies</a>.
+    </p>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Claim #</th>
+                <th>Incident date</th>
+                <th>Amount</th>
+                <th>Approved</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var claim in Model.Claims)
+            {
+                <tr>
+                    <td>@claim.ClaimNumber</td>
+                    <td>@claim.IncidentDate.ToString("yyyy-MM-dd")</td>
+                    <td>@claim.ClaimAmount.ToString("N2")</td>
+                    <td>@(claim.ApprovedAmount?.ToString("N2") ?? "-")</td>
+                    <td>@claim.Reason</td>
+                    <td>
+                        @if (claim.Status == ClaimStatus.Approved)
+                        {
+                            <span class="badge bg-success">@claim.Status</span>
+                        }
+                        else if (claim.Status == ClaimStatus.Rejected)
+                        {
+                            <span class="badge bg-danger">@claim.Status</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">@claim.Status</span>
+                        }
+                    </td>
+                    <td>@claim.Notes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

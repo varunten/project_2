@@ -1,0 +1,56 @@
+@model PoliciesDto
+@{
+    ViewData["Title"] = "My policies";
+}
+
+<h2>My policies</h2>
+
+@if (Model.Total == 0)
+{
+    <p class="text-muted">
+        You have no policies yet. A policy is created once an underwriter approves
+        a quote you have accepted.
+    </p>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Policy #</th>
+                <th>Product</th>
+                <th>Coverage</th>
+                <th>Premium</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var policy in Model.Policies)
+            {
+                <tr>
+                    <td>@policy.PolicyNumber</td>
+                    <td>@policy.ProductName</td>
+                    <td>@policy.CoverageAmount.ToString("N0")</td>
+                    <td>@policy.PremiumAmount.ToString("N2")</td>
+                    <td>@policy.StartDate.ToString("yyyy-MM-dd")</td>
+                    <td>@policy.EndDate.ToString("yyyy-MM-dd")</td>
+                    <td><span class="badge bg-secondary">@policy.Status</span></td>
+                    <td class="text-nowrap">
+                        <a class="btn btn-sm btn-outline-primary"
+                           asp-controller="Payments" asp-action="Index"
+                           asp-route-policyId="@policy.Id">Payments</a>
+                        @if (policy.Status == PolicyStatus.Active)
+                        {
+                            <a class="btn btn-sm btn-outline-secondary"
+                               asp-controller="Claims" asp-action="Create"
+                               asp-route-policyId="@policy.Id">File a claim</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

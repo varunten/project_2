@@ -1,0 +1,87 @@
+using ipms.MVC.Services;
+using IPMS.DTO.Dtos;
+using Microsoft.AspNetCore.Mvc;
+
+namespace ipms.MVC.Controllers;
+
+
+public class AccountController : BaseController
+{
+    private readonly IpmsApiClient _api;
+
+    public AccountController(IpmsApiClient api)
+    {
+        _api = api;
+    }
+
+
+    [HttpGet]
+    public IActionResult Signup()
+    {
+        return View();
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> Signup(AuthSignupDto payload)
+    {
+        try
+        {
+            await _api.SignupAsync(payload);
+
+            TempData["Success"] = "Account created. Please sign in.";
+            return RedirectToAction(nameof(Login));
+        }
+        catch (ApiException ex)
+        {
+            AddApiErrors(ex);
+            return View(payload);
+        }
+    }
+
+
+    [HttpGet]
+    public IActionResult Login()
+    {
+        return View();
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> Login(AuthLoginDto payload)
+    {
+        try
+        {
+            TokenDto token = await _api.LoginAsync(payload);
+
+            HttpContext.Session.SetString(SessionKeys.AccessToken, token.AccessToken);
+            HttpContext.Session.SetString(SessionKeys.RefreshToken, token.RefreshToken);
+            HttpContext.Session.SetString(SessionKeys.Email, payload.Email);
+
+            // Remember the roles so the menu can show the right links.
+            List<string> roles = JwtHelper.GetRoles(token.AccessToken);
+            HttpContext.Session.SetString(SessionKeys.Roles, string.Join(",", roles));
+
+            // Underwriters land on their review queue, everyone else on products.
+            if (roles.Contains(IPMS.DTO.Roles.Underwriter))
+                return RedirectToAction("Index", "Underwriting");
+
+            return RedirectToAction("Index", "Products");
+        }
+        catch (ApiException ex)
+        {
+            AddApiErrors(ex);
+            return View(payload);
+        }
+    }
+
+
+    [HttpPost]
+    public IActionResult Logout()
+    {
+        HttpContext.Session.Clear();
+
+        TempData["Success"] = "You have been signed out.";
+        return RedirectToAction("Index", "Home");
+    }
+}

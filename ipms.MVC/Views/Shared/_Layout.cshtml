@@ -1,0 +1,100 @@
+@{
+    var email = Context.Session.GetString(SessionKeys.Email);
+    var isLoggedIn = !string.IsNullOrEmpty(Context.Session.GetString(SessionKeys.AccessToken));
+    var roles = (Context.Session.GetString(SessionKeys.Roles) ?? "").Split(',');
+    var isUnderwriter = roles.Contains(Roles.Underwriter);
+    var isCustomer = roles.Contains(Roles.Customer);
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IPMS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body>
+    <nav class="navbar navbar-expand navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">IPMS</a>
+
+            <ul class="navbar-nav me-auto">
+                @if (isLoggedIn)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Products" asp-action="Index">Products</a>
+                    </li>
+
+                    @if (isCustomer)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Quotes" asp-action="Index">My Quotes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Policies" asp-action="Index">My Policies</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Claims" asp-action="Index">My Claims</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Customer" asp-action="Create">My Profile</a>
+                        </li>
+                    }
+
+                    @if (isUnderwriter)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Underwriting" asp-action="Index">Review Quotes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Claims" asp-action="Review">Review Claims</a>
+                        </li>
+                    }
+                }
+            </ul>
+
+            <ul class="navbar-nav">
+                @if (isLoggedIn)
+                {
+                    <li class="nav-item">
+                        <span class="navbar-text me-3">@email</span>
+                    </li>
+                    <li class="nav-item">
+                        <form asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit" class="btn btn-sm btn-outline-light">Sign out</button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Account" asp-action="Login">Sign in</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Account" asp-action="Signup">Sign up</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
