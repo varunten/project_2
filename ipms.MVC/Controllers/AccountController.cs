@@ -62,7 +62,10 @@ public class AccountController : BaseController
             List<string> roles = JwtHelper.GetRoles(token.AccessToken);
             HttpContext.Session.SetString(SessionKeys.Roles, string.Join(",", roles));
 
-            // Underwriters land on their review queue, everyone else on products.
+            // Send each role to the page they actually need.
+            if (roles.Contains(IPMS.DTO.Roles.Admin))
+                return RedirectToAction("Users", "Admin");
+
             if (roles.Contains(IPMS.DTO.Roles.Underwriter))
                 return RedirectToAction("Index", "Underwriting");
 

@@ -30,6 +30,10 @@ public interface IAuthService
     );
 
 
+    // Admin listing of every user with the roles they hold.
+    Task<UsersDto> GetAllUsersAsync();
+
+
     // Gives an existing user another role; returns the user's roles afterwards.
     Task<List<string>> AssignRoleAsync(
         Guid userId,

@@ -512,6 +512,35 @@ public async Task<UserDto> CreateStaffAsync(CreateStaffDto payload)
 }
 
 
+public async Task<UsersDto> GetAllUsersAsync()
+{
+    List<User> users = await _repository.GetAllUsersAsync();
+
+    Dictionary<Guid, List<string>> rolesByUser =
+        await _repository.GetRolesForUsersAsync(users.Select(u => u.Id).ToList());
+
+    List<UserWithRolesDto> dtos = users
+        .Select(u => new UserWithRolesDto
+        {
+            Id = u.Id,
+            FirstName = u.FirstName,
+            MiddleName = u.MiddleName,
+            LastName = u.LastName,
+            Email = u.Email,
+            PhoneNumber = u.PhoneNumber,
+            Roles = rolesByUser.GetValueOrDefault(u.Id, []),
+            CreatedAt = u.CreatedAt
+        })
+        .ToList();
+
+    return new UsersDto
+    {
+        Total = (ulong)dtos.Count,
+        Users = dtos
+    };
+}
+
+
 public async Task<List<string>> AssignRoleAsync(Guid userId, string role)
 {
     string[] allowedRoles =

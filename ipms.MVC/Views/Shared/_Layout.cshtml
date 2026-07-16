@@ -4,6 +4,7 @@
     var roles = (Context.Session.GetString(SessionKeys.Roles) ?? "").Split(',');
     var isUnderwriter = roles.Contains(Roles.Underwriter);
     var isCustomer = roles.Contains(Roles.Customer);
+    var isAdmin = roles.Contains(Roles.Admin);
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -48,6 +49,19 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Claims" asp-action="Review">Review Claims</a>
+                        </li>
+                    }
+
+                    @if (isAdmin)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Admin" asp-action="Users">Users</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Admin" asp-action="CreateStaff">Create Staff</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Admin" asp-action="CreateProduct">Add Product</a>
                         </li>
                     }
                 }

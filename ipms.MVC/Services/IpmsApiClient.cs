@@ -30,6 +30,21 @@ public class IpmsApiClient
         SendAsync<TokenDto>(HttpMethod.Post, "api/auth/login", payload);
 
 
+    // ---- Admin ----
+
+    public Task<UsersDto> GetUsersAsync() =>
+        SendAsync<UsersDto>(HttpMethod.Get, "api/auth/users");
+
+    public Task<UserDto> CreateStaffAsync(CreateStaffDto payload) =>
+        SendAsync<UserDto>(HttpMethod.Post, "api/auth/staff", payload);
+
+    public Task<List<string>> AssignRoleAsync(Guid userId, AssignRoleDto payload) =>
+        SendAsync<List<string>>(HttpMethod.Post, $"api/auth/users/{userId}/roles", payload);
+
+    public Task<ProductDto> CreateProductAsync(CreateProductDto payload) =>
+        SendAsync<ProductDto>(HttpMethod.Post, "api/product", payload);
+
+
     // ---- Customer profile ----
 
     public Task<CustomerDto> CreateCustomerAsync(CreateCustomerDto payload) =>

@@ -37,6 +37,12 @@ public interface IAuthRepository
     // Role names assigned to a user (put into the JWT so [Authorize(Roles)] works).
     Task<List<string>> GetUserRolesAsync(Guid userId);
 
+    // Every user (admin listing). Excludes soft-deleted accounts.
+    Task<List<User>> GetAllUsersAsync();
+
+    // Roles for many users at once, keyed by user id (avoids N+1 in listings).
+    Task<Dictionary<Guid, List<string>>> GetRolesForUsersAsync(List<Guid> userIds);
+
     // Whether a user already has a given role (avoids duplicate assignments).
     Task<bool> UserHasRoleAsync(Guid userId, Guid roleId);
 

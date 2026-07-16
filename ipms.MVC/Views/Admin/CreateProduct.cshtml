@@ -1,0 +1,65 @@
+@model CreateProductDto
+@{
+    ViewData["Title"] = "Add product";
+}
+
+<h2>Add an insurance product</h2>
+
+<div class="row">
+    <div class="col-md-7">
+        <form asp-action="CreateProduct" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Name</label>
+                <input asp-for="Name" class="form-control" placeholder="Term Life Gold" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Type" class="form-label">Type</label>
+                <select asp-for="Type" asp-items="Html.GetEnumSelectList<ProductType>()" class="form-select"></select>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="CoverageAmount" class="form-label">Coverage amount</label>
+                    <input asp-for="CoverageAmount" class="form-control" />
+                    <span asp-validation-for="CoverageAmount" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="BasePremium" class="form-label">Base premium</label>
+                    <input asp-for="BasePremium" class="form-control" />
+                    <span asp-validation-for="BasePremium" class="text-danger"></span>
+                    <div class="form-text">Premium for the coverage amount above.</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="MinAge" class="form-label">Min age</label>
+                    <input asp-for="MinAge" class="form-control" />
+                    <span asp-validation-for="MinAge" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="MaxAge" class="form-label">Max age</label>
+                    <input asp-for="MaxAge" class="form-control" />
+                    <span asp-validation-for="MaxAge" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="PolicyTermYears" class="form-label">Term (years)</label>
+                    <input asp-for="PolicyTermYears" class="form-control" />
+                    <span asp-validation-for="PolicyTermYears" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create product</button>
+            <a asp-controller="Products" asp-action="Index" class="btn btn-link">Cancel</a>
+        </form>
+    </div>
+</div>

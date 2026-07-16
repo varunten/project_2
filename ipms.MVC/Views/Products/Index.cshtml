@@ -1,9 +1,18 @@
 @model ProductsDto
 @{
     ViewData["Title"] = "Products";
+    var roles = (Context.Session.GetString(SessionKeys.Roles) ?? "").Split(',');
+    var isCustomer = roles.Contains(Roles.Customer);
+    var isAdmin = roles.Contains(Roles.Admin);
 }
 
-<h2>Insurance products</h2>
+<div class="d-flex justify-content-between align-items-center">
+    <h2>Insurance products</h2>
+    @if (isAdmin)
+    {
+        <a class="btn btn-sm btn-primary" asp-controller="Admin" asp-action="CreateProduct">Add product</a>
+    }
+</div>
 
 @if (Model.Total == 0)
 {
@@ -41,9 +50,13 @@ else
                     <td>@product.MinAge - @product.MaxAge</td>
                     <td>@product.PolicyTermYears yrs</td>
                     <td>
-                        <a class="btn btn-sm btn-primary"
-                           asp-controller="Quotes" asp-action="Create"
-                           asp-route-productId="@product.Id">Request a quote</a>
+                        @* Only customers can buy insurance - staff just browse. *@
+                        @if (isCustomer)
+                        {
+                            <a class="btn btn-sm btn-primary"
+                               asp-controller="Quotes" asp-action="Create"
+                               asp-route-productId="@product.Id">Request a quote</a>
+                        }
                     </td>
                 </tr>
             }

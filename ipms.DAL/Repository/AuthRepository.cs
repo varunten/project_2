@@ -128,6 +128,34 @@ public class AuthRepository : IAuthRepository
 
 
 
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        return await _context.Users
+            .Where(u => u.DeletedAt == null)
+            .OrderByDescending(u => u.CreatedAt)
+            .ToListAsync();
+    }
+
+
+
+    public async Task<Dictionary<Guid, List<string>>> GetRolesForUsersAsync(
+        List<Guid> userIds)
+    {
+        var rows = await (
+            from userRole in _context.UserRoles
+            join role in _context.Roles
+                on userRole.RoleId equals role.Id
+            where userIds.Contains(userRole.UserId)
+            select new { userRole.UserId, role.Name }
+        ).ToListAsync();
+
+        return rows
+            .GroupBy(r => r.UserId)
+            .ToDictionary(g => g.Key, g => g.Select(r => r.Name).ToList());
+    }
+
+
+
     public async Task<bool> UserHasRoleAsync(Guid userId, Guid roleId)
     {
         return await _context.UserRoles

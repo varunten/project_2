@@ -44,6 +44,14 @@ public class QuotesController : BaseController
         if (!IsLoggedIn)
             return RedirectToAction("Login", "Account");
 
+        // Only customers can buy insurance. Staff who land here by URL get
+        // sent back rather than shown a form the API would reject.
+        if (!IsInRole(IPMS.DTO.Roles.Customer))
+        {
+            TempData["Error"] = "Only customers can request a quote.";
+            return RedirectToAction("Index", "Products");
+        }
+
         try
         {
             ProductDto product = await _api.GetProductAsync(productId);

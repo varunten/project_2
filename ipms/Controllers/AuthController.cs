@@ -61,6 +61,16 @@ public class AuthController : ControllerBase
     }
 
 
+    // Admin lists every user and the roles they hold.
+    [HttpGet("users")]
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<ActionResult<ApiResponse<UsersDto>>> GetUsers()
+    {
+        UsersDto result = await _service.GetAllUsersAsync();
+        return Ok(ApiResponse.Ok(result, "Users retrieved."));
+    }
+
+
     // Admin promotes an existing user by assigning them another role.
     [HttpPost("users/{user_id}/roles")]
     [Authorize(Roles = Roles.Admin)]

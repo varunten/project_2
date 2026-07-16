@@ -1,0 +1,66 @@
+@model UsersDto
+@{
+    ViewData["Title"] = "Users";
+    var assignable = new[] { Roles.Admin, Roles.InsuranceAgent, Roles.Underwriter, Roles.Customer };
+}
+
+<div class="d-flex justify-content-between align-items-center">
+    <h2>Users <span class="text-muted fs-6">(@Model.Total)</span></h2>
+    <div>
+        <a class="btn btn-sm btn-primary" asp-action="CreateStaff">Create staff</a>
+        <a class="btn btn-sm btn-outline-secondary" asp-action="CreateProduct">Add product</a>
+    </div>
+</div>
+
+@if (Model.Total == 0)
+{
+    <p class="text-muted">No users.</p>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Roles</th>
+                <th>Joined</th>
+                <th>Add role</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.Users)
+            {
+                <tr>
+                    <td>@user.FirstName @user.LastName</td>
+                    <td>@user.Email</td>
+                    <td>@user.PhoneNumber</td>
+                    <td>
+                        @foreach (var role in user.Roles)
+                        {
+                            <span class="badge bg-info text-dark">@role</span>
+                        }
+                    </td>
+                    <td>@user.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <form asp-action="AssignRole" method="post" class="d-flex gap-2">
+                            <input type="hidden" name="id" value="@user.Id" />
+                            <select name="role" class="form-select form-select-sm" style="max-width:150px">
+                                @foreach (var role in assignable.Where(r => !user.Roles.Contains(r)))
+                                {
+                                    <option value="@role">@role</option>
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Add</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p class="text-muted">
+        <small>A promoted user must sign in again before the new role takes effect.</small>
+    </p>
+}
