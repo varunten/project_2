@@ -1,14 +1,21 @@
 using IPMS.DTO.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace IPMS.DAL.Data;
 
 
 public class AppDbContext: DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options): base(options)
+    // Used to record "who" on each audit row. Optional so the context can still
+    // be created without it (design-time tooling, tests).
+    private readonly ICurrentUserProvider? _currentUser;
+
+    public AppDbContext(
+        DbContextOptions<AppDbContext> options,
+        ICurrentUserProvider? currentUser = null): base(options)
     {
-        
+        _currentUser = currentUser;
     }
 
     public DbSet<User> Users {get; set;}
@@ -24,6 +31,7 @@ public class AppDbContext: DbContext
     public DbSet<PremiumPayment> PremiumPayments {get; set;}
     public DbSet<Claim> Claims {get; set;}
     public DbSet<ClaimDocument> ClaimDocuments {get; set;}
+    public DbSet<AuditLog> AuditLogs {get; set;}
 
 
     // Give every decimal a money-friendly precision (18 digits, 2 decimals).
@@ -47,14 +55,18 @@ public class AppDbContext: DbContext
         modelBuilder.Entity<Claim>().Property(c => c.Reason).HasMaxLength(1000);
         modelBuilder.Entity<Claim>().Property(c => c.Notes).HasMaxLength(2000);
         modelBuilder.Entity<ClaimDocument>().Property(d => d.FileURL).HasMaxLength(2048);
+
+        // The changed-columns list can be longer than the 256 default.
+        modelBuilder.Entity<AuditLog>().Property(a => a.ChangedColumns).HasMaxLength(1000);
     }
 
 
-    // Automatically stamp CreatedAt / UpdatedAt on every save so no service
-    // has to remember to set them.
+    // Automatically stamp CreatedAt / UpdatedAt AND record an audit trail on
+    // every save, so no service has to remember to do either.
     public override int SaveChanges()
     {
         ApplyTimestamps();
+        CaptureAuditLogs();
         return base.SaveChanges();
     }
 
@@ -63,6 +75,7 @@ public class AppDbContext: DbContext
         CancellationToken cancellationToken = default)
     {
         ApplyTimestamps();
+        CaptureAuditLogs();
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 
@@ -82,5 +95,68 @@ public class AppDbContext: DbContext
                 entry.Entity.UpdatedAt = now;
             }
         }
+    }
+
+
+    // Adds one AuditLog row for every insert / update / delete about to be
+    // saved. Runs before base.SaveChanges so it is committed in the same
+    // transaction as the change it describes.
+    private void CaptureAuditLogs()
+    {
+        // Snapshot the changes first - we must not audit the audit rows we add,
+        // and adding to the context would otherwise change this collection.
+        List<EntityEntry> entries = ChangeTracker.Entries()
+            .Where(e =>
+                e.Entity is not AuditLog &&
+                (e.State == EntityState.Added ||
+                 e.State == EntityState.Modified ||
+                 e.State == EntityState.Deleted))
+            .ToList();
+
+        if (entries.Count == 0)
+            return;
+
+        Guid? userId = _currentUser?.GetUserId();
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+
+        foreach (EntityEntry entry in entries)
+        {
+            string action = entry.State switch
+            {
+                EntityState.Added => "Added",
+                EntityState.Deleted => "Deleted",
+                _ => "Modified"
+            };
+
+            string? changedColumns = entry.State == EntityState.Modified
+                ? string.Join(", ", entry.Properties
+                    .Where(p => p.IsModified)
+                    .Select(p => p.Metadata.Name))
+                : null;
+
+            AuditLogs.Add(new AuditLog
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Action = action,
+                TableName = entry.Metadata.GetTableName() ?? entry.Metadata.ClrType.Name,
+                RecordId = GetPrimaryKey(entry),
+                ChangedColumns = changedColumns,
+                Timestamp = now
+            });
+        }
+    }
+
+
+    private static string GetPrimaryKey(EntityEntry entry)
+    {
+        var key = entry.Metadata.FindPrimaryKey();
+        if (key is null)
+            return string.Empty;
+
+        IEnumerable<string?> values = key.Properties
+            .Select(p => entry.Property(p.Name).CurrentValue?.ToString());
+
+        return string.Join(",", values);
     }
 }

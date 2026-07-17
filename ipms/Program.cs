@@ -87,6 +87,11 @@ public class Program
 
 
 
+        // Lets the DbContext stamp the current user's id onto audit rows.
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
+
+
         // ---- Repositories (Data Access Layer) ----
         builder.Services.AddScoped<IAuthRepository, AuthRepository>();
         builder.Services.AddScoped<IProductRepository, ProductRepository>();

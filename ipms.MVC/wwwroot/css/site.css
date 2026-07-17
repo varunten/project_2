@@ -1,31 +1,213 @@
-html {
-  font-size: 14px;
-}
+/* ==========================================================================
+   IPMS theme - adapted from the "Graby insur" reference design.
+   Deep navy + spring green + mint, bold headings, rounded buttons.
+   Layered on top of Bootstrap (we only override a handful of things).
+   ========================================================================== */
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+:root {
+    --navy: #14226b;
+    --navy-dark: #0e1a52;
+    --green: #33b98f;
+    --green-dark: #2aa079;
+    --mint: #bfe9d8;
+    --mint-soft: #e7f6ef;
+    --ink: #1f2733;
+    --muted: #6b7280;
+    --paper: #f4f6f8;
+    --line: #e9ecf2;
 }
 
 body {
-  margin-bottom: 60px;
+    color: var(--ink);
+    background: #fff;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -0.01em;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+a {
+    color: var(--navy);
+    text-decoration: none;
 }
+a:hover {
+    color: var(--green);
+}
+
+.text-accent { color: var(--green) !important; }
+.bg-paper { background: var(--paper); }
+
+
+/* ---- Buttons ---- */
+
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.5rem 1.15rem;
+}
+
+.btn-primary {
+    background-color: var(--navy);
+    border-color: var(--navy);
+}
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: var(--navy-dark) !important;
+    border-color: var(--navy-dark) !important;
+}
+
+.btn-accent {
+    background-color: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+.btn-accent:hover, .btn-accent:focus {
+    background-color: var(--green-dark);
+    border-color: var(--green-dark);
+    color: #fff;
+}
+
+.btn-outline-primary {
+    color: var(--navy);
+    border-color: var(--navy);
+}
+.btn-outline-primary:hover {
+    background-color: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+}
+
+.btn-sm { padding: 0.3rem 0.7rem; }
+
+
+/* ---- Navbar ---- */
+
+.navbar-ipms {
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+}
+.navbar-ipms .navbar-brand {
+    color: var(--navy);
+    font-weight: 800;
+    font-size: 1.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.navbar-ipms .nav-link {
+    color: var(--navy);
+    font-weight: 600;
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+}
+.navbar-ipms .nav-link:hover {
+    color: var(--green);
+}
+.navbar-ipms .navbar-text {
+    color: var(--muted);
+}
+
+
+/* ---- Hero ---- */
+
+.hero {
+    padding: 3.5rem 0 4rem;
+}
+.hero h1 {
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1.08;
+    margin-bottom: 1.25rem;
+}
+.hero-lead {
+    color: var(--muted);
+    font-size: 1.1rem;
+    max-width: 30rem;
+}
+
+/* the decorative panel on the right */
+.hero-art {
+    position: relative;
+    min-height: 340px;
+}
+.hero-panel {
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(150deg, var(--navy) 0%, #24337f 100%);
+    color: #fff;
+    border-radius: 24px 24px 120px 24px;
+    padding: 2rem;
+    box-shadow: 0 24px 50px rgba(20, 34, 107, 0.25);
+}
+.hero-panel h5 { color: #fff; }
+.hero-panel .list-unstyled li {
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.hero-badge {
+    position: absolute;
+    top: -18px;
+    right: -10px;
+    z-index: 3;
+    background: var(--mint);
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 0.8rem;
+    border-radius: 50%;
+    width: 78px;
+    height: 78px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    padding: 0.5rem;
+    box-shadow: 0 8px 18px rgba(20, 34, 107, 0.18);
+}
+/* soft mint blob behind the panel */
+.hero-art::before {
+    content: "";
+    position: absolute;
+    right: -30px;
+    bottom: -30px;
+    width: 220px;
+    height: 220px;
+    background: var(--mint);
+    border-radius: 50%;
+    opacity: 0.5;
+    z-index: 1;
+}
+/* dotted texture, echoing the reference */
+.hero-dots {
+    position: absolute;
+    left: -26px;
+    top: -18px;
+    width: 120px;
+    height: 90px;
+    background-image: radial-gradient(var(--mint) 2px, transparent 2px);
+    background-size: 14px 14px;
+    z-index: 0;
+}
+
+
+/* ---- Tables & badges ---- */
+
+.table > thead th {
+    color: var(--navy);
+    border-bottom: 2px solid var(--line);
+}
+.card {
+    border-radius: 14px;
+}
+
+
+/* ---- Footer ---- */
+
+.site-footer {
+    background: var(--navy);
+    color: rgba(255, 255, 255, 0.75);
+    padding: 1.5rem 0;
+    margin-top: 3rem;
+}
+.site-footer a { color: #fff; }
