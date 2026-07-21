@@ -35,4 +35,24 @@ public class PoliciesController : BaseController
             return View(new PoliciesDto { Total = 0, Policies = [] });
         }
     }
+
+
+    // Loaded into the "view policy" modal on the list page. Returns just the
+    // fragment (no layout) so it can be dropped straight into the modal body.
+    [HttpGet]
+    public async Task<IActionResult> Details(Guid id)
+    {
+        if (!IsLoggedIn)
+            return Content("Your session has expired. Please sign in again.");
+
+        try
+        {
+            PolicyDto policy = await _api.GetPolicyAsync(id);
+            return PartialView("_PolicyDetails", policy);
+        }
+        catch (ApiException ex)
+        {
+            return Content(ex.Message);
+        }
+    }
 }

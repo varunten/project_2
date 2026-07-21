@@ -1,0 +1,78 @@
+@model PolicyDto
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h4 class="mb-1">@Model.PolicyNumber</h4>
+        <div class="text-muted">@Model.ProductName</div>
+    </div>
+    <span class="badge bg-secondary fs-6">@Model.Status</span>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <h6 class="text-uppercase text-muted small">Cover</h6>
+        <dl class="row mb-0">
+            <dt class="col-6">Coverage amount</dt>
+            <dd class="col-6">@Model.CoverageAmount.ToString("N2")</dd>
+
+            <dt class="col-6">Premium amount</dt>
+            <dd class="col-6">@Model.PremiumAmount.ToString("N2")</dd>
+        </dl>
+    </div>
+
+    <div class="col-md-6">
+        <h6 class="text-uppercase text-muted small">Dates</h6>
+        <dl class="row mb-0">
+            <dt class="col-6">Quoted on</dt>
+            <dd class="col-6">@Model.QuoteDate.ToString("yyyy-MM-dd")</dd>
+
+            <dt class="col-6">Issued on</dt>
+            <dd class="col-6">@Model.IssueDate.ToString("yyyy-MM-dd")</dd>
+
+            <dt class="col-6">Starts</dt>
+            <dd class="col-6">@Model.StartDate.ToString("yyyy-MM-dd")</dd>
+
+            <dt class="col-6">Ends</dt>
+            <dd class="col-6">@Model.EndDate.ToString("yyyy-MM-dd")</dd>
+        </dl>
+    </div>
+
+    <div class="col-md-6">
+        <h6 class="text-uppercase text-muted small">Handled by</h6>
+        <dl class="row mb-0">
+            <dt class="col-6">Underwriter</dt>
+            <dd class="col-6"><small>@Model.UnderWriterId</small></dd>
+
+            <dt class="col-6">Insurance agent</dt>
+            <dd class="col-6"><small>@(Model.InsuranceAgentId?.ToString() ?? "Issued directly")</small></dd>
+        </dl>
+    </div>
+
+    <div class="col-md-6">
+        <h6 class="text-uppercase text-muted small">Reference</h6>
+        <dl class="row mb-0">
+            <dt class="col-6">Policy id</dt>
+            <dd class="col-6"><small>@Model.Id</small></dd>
+
+            <dt class="col-6">From quote</dt>
+            <dd class="col-6"><small>@Model.QuoteId</small></dd>
+
+            <dt class="col-6">Created</dt>
+            <dd class="col-6"><small>@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small></dd>
+
+            <dt class="col-6">Last updated</dt>
+            <dd class="col-6"><small>@Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</small></dd>
+        </dl>
+    </div>
+</div>
+
+<hr />
+
+<a class="btn btn-sm btn-outline-primary"
+   asp-controller="Payments" asp-action="Index" asp-route-policyId="@Model.Id">View payments</a>
+
+@if (Model.Status == PolicyStatus.Active)
+{
+    <a class="btn btn-sm btn-outline-secondary"
+       asp-controller="Claims" asp-action="Create" asp-route-policyId="@Model.Id">File a claim</a>
+}
