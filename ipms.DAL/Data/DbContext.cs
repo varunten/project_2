@@ -32,6 +32,7 @@ public class AppDbContext: DbContext
     public DbSet<Claim> Claims {get; set;}
     public DbSet<ClaimDocument> ClaimDocuments {get; set;}
     public DbSet<AuditLog> AuditLogs {get; set;}
+    public DbSet<ErrorLog> ErrorLogs {get; set;}
 
 
     // Give every decimal a money-friendly precision (18 digits, 2 decimals).
@@ -58,6 +59,13 @@ public class AppDbContext: DbContext
 
         // The changed-columns list can be longer than the 256 default.
         modelBuilder.Entity<AuditLog>().Property(a => a.ChangedColumns).HasMaxLength(1000);
+
+        // Error text can be long - a stack trace must never be truncated by the
+        // 256 default, otherwise writing the log would itself fail.
+        modelBuilder.Entity<ErrorLog>().Property(e => e.Message).HasMaxLength(2000);
+        modelBuilder.Entity<ErrorLog>().Property(e => e.StackTrace).HasColumnType("nvarchar(max)");
+        modelBuilder.Entity<ErrorLog>().Property(e => e.Path).HasMaxLength(512);
+        modelBuilder.Entity<ErrorLog>().Property(e => e.Method).HasMaxLength(16);
     }
 
 
@@ -103,11 +111,13 @@ public class AppDbContext: DbContext
     // transaction as the change it describes.
     private void CaptureAuditLogs()
     {
-        // Snapshot the changes first - we must not audit the audit rows we add,
-        // and adding to the context would otherwise change this collection.
+        // Snapshot the changes first - we must not audit the log rows we add
+        // (that would recurse), and adding to the context would otherwise
+        // change this collection while we iterate it.
         List<EntityEntry> entries = ChangeTracker.Entries()
             .Where(e =>
                 e.Entity is not AuditLog &&
+                e.Entity is not ErrorLog &&
                 (e.State == EntityState.Added ||
                  e.State == EntityState.Modified ||
                  e.State == EntityState.Deleted))
