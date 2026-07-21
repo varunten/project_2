@@ -41,7 +41,20 @@ else
                     <td>@policy.PremiumAmount.ToString("N2")</td>
                     <td>@policy.StartDate.ToString("yyyy-MM-dd")</td>
                     <td>@policy.EndDate.ToString("yyyy-MM-dd")</td>
-                    <td><span class="badge bg-secondary">@policy.Status</span></td>
+                    <td>
+                        @if (policy.Status == PolicyStatus.Active)
+                        {
+                            <span class="badge bg-success">@policy.Status</span>
+                        }
+                        else if (policy.Status == PolicyStatus.Cancelled)
+                        {
+                            <span class="badge bg-danger">@policy.Status</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">@policy.Status</span>
+                        }
+                    </td>
                     <td class="text-nowrap" onclick="event.stopPropagation();">
                         <a class="btn btn-sm btn-outline-primary"
                            asp-controller="Payments" asp-action="Index"
@@ -51,6 +64,13 @@ else
                             <a class="btn btn-sm btn-outline-secondary"
                                asp-controller="Claims" asp-action="Create"
                                asp-route-policyId="@policy.Id">File a claim</a>
+                        }
+                        @* A cancelled policy cannot be renewed. *@
+                        @if (policy.Status != PolicyStatus.Cancelled)
+                        {
+                            <form asp-action="Renew" asp-route-id="@policy.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-accent">Renew</button>
+                            </form>
                         }
                     </td>
                 </tr>

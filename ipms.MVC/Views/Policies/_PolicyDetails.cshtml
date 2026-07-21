@@ -57,6 +57,12 @@
             <dt class="col-6">From quote</dt>
             <dd class="col-6"><small>@Model.QuoteId</small></dd>
 
+            @if (Model.PreviousPolicyId.HasValue)
+            {
+                <dt class="col-6">Renewal of</dt>
+                <dd class="col-6"><small>@Model.PreviousPolicyId</small></dd>
+            }
+
             <dt class="col-6">Created</dt>
             <dd class="col-6"><small>@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small></dd>
 

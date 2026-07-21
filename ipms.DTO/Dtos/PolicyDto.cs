@@ -10,6 +10,8 @@ public class PolicyDto
 {
     public required Guid Id { get; set; }
     public required string PolicyNumber { get; set; }
+    // Set when this policy is a renewal of an earlier one.
+    public Guid? PreviousPolicyId { get; set; }
     public required Guid QuoteId { get; set; }
     public required Guid ProductId { get; set; }
     public required string ProductName { get; set; }

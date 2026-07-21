@@ -47,6 +47,15 @@ public class PolicyController : ControllerBase
     }
 
 
+    // Renew: issues a new policy carrying on from this one.
+    [HttpPost("{policy_id}/renew")]
+    public async Task<ActionResult<ApiResponse<PolicyDto>>> RenewPolicy(Guid policy_id)
+    {
+        PolicyDto result = await _service.RenewPolicyAsync(GetUserId(), policy_id);
+        return Ok(ApiResponse.Ok(result, "Policy renewed."));
+    }
+
+
     private Guid GetUserId()
     {
         return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);

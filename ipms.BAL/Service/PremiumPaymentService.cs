@@ -109,9 +109,46 @@ public class PremiumPaymentService : IPremiumPaymentService
             ? PremiumPaymentStatus.Late
             : PremiumPaymentStatus.Success;
 
+        // Keep the schedule rolling: paying one installment queues up the next.
+        await CreateNextInstallmentAsync(payment, policy);
+
         await _repository.SaveChangesAsync();
 
         return MapToDto(payment);
+    }
+
+
+    // Adds the following installment for a policy, unless the policy term has
+    // already been covered. Called after an installment is paid.
+    private async Task CreateNextInstallmentAsync(PremiumPayment paid, Policy policy)
+    {
+        DateOnly nextDueDate = paid.Frequency switch
+        {
+            PremiumFrequency.monthly => paid.DueDate.AddMonths(1),
+            PremiumFrequency.quarterly => paid.DueDate.AddMonths(3),
+            _ => paid.DueDate.AddYears(1)
+        };
+
+        // The policy term is fully paid up - nothing more to collect.
+        if (nextDueDate > policy.EndDate)
+            return;
+
+        List<PremiumPayment> existing = await _repository.GetByPolicyIdAsync(policy.Id);
+
+        // Don't create a duplicate if that installment is already there.
+        if (existing.Any(p => p.DueDate == nextDueDate))
+            return;
+
+        await _repository.AddAsync(new PremiumPayment
+        {
+            PolicyId = policy.Id,
+            InstallmentNumber = (existing.Count + 1).ToString(),
+            PremiumAmount = paid.PremiumAmount,
+            Frequency = paid.Frequency,
+            PenaltyAmount = 0,
+            DueDate = nextDueDate,
+            PaymentStatus = PremiumPaymentStatus.Pending
+        });
     }
 
 

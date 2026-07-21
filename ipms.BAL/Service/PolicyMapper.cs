@@ -14,6 +14,7 @@ public static class PolicyMapper
         {
             Id = p.Id,
             PolicyNumber = p.PolicyNumber,
+            PreviousPolicyId = p.PreviousPolicyId,
             QuoteId = p.QuoteId,
             ProductId = p.ProductId,
             ProductName = productName,

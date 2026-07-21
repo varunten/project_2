@@ -37,6 +37,27 @@ public class PoliciesController : BaseController
     }
 
 
+    [HttpPost]
+    public async Task<IActionResult> Renew(Guid id)
+    {
+        if (!IsLoggedIn)
+            return RedirectToAction("Login", "Account");
+
+        try
+        {
+            PolicyDto renewed = await _api.RenewPolicyAsync(id);
+            TempData["Success"] = $"Policy renewed. New policy {renewed.PolicyNumber} " +
+                                  $"runs to {renewed.EndDate:yyyy-MM-dd}.";
+        }
+        catch (ApiException ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+
     // Loaded into the "view policy" modal on the list page. Returns just the
     // fragment (no layout) so it can be dropped straight into the modal body.
     [HttpGet]

@@ -93,6 +93,9 @@ public class IpmsApiClient
     public Task<PolicyDto> GetPolicyAsync(Guid policyId) =>
         SendAsync<PolicyDto>(HttpMethod.Get, $"api/policy/{policyId}");
 
+    public Task<PolicyDto> RenewPolicyAsync(Guid policyId) =>
+        SendAsync<PolicyDto>(HttpMethod.Post, $"api/policy/{policyId}/renew");
+
 
     // ---- Premium payments ----
 

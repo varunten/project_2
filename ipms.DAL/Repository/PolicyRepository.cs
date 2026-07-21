@@ -42,6 +42,13 @@ public class PolicyRepository : IPolicyRepository
     }
 
 
+    public async Task<bool> HasRenewalAsync(Guid previousPolicyId)
+    {
+        return await _context.Policies
+            .AnyAsync(p => p.PreviousPolicyId == previousPolicyId && p.DeletedAt == null);
+    }
+
+
     public async Task AddAsync(Policy policy)
     {
         await _context.Policies.AddAsync(policy);

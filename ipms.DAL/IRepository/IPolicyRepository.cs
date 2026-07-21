@@ -11,6 +11,10 @@ public interface IPolicyRepository
 
     Task<Policy?> GetByIdForCustomerAsync(Guid policyId, Guid customerId);
 
+    // True when a renewal policy already points back at this one, so the same
+    // policy cannot be renewed twice.
+    Task<bool> HasRenewalAsync(Guid previousPolicyId);
+
     Task AddAsync(Policy policy);
 
     Task SaveChangesAsync();
