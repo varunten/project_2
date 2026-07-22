@@ -93,6 +93,8 @@ public class AdminController : BaseController
         IActionResult? denied = RequireAdmin();
         if (denied is not null) return denied;
 
+        if (!ModelState.IsValid) return View(payload);
+
         try
         {
             UserDto staff = await _api.CreateStaffAsync(payload);

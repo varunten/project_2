@@ -3,72 +3,96 @@
     ViewData["Title"] = "My quotes";
 }
 
-<h2>My quotes</h2>
+<div class="page-head">
+    <div>
+        <h2>My quotes</h2>
+        <p class="page-sub">Click a quote to see its full details.</p>
+    </div>
+    <a class="btn btn-teal" asp-controller="Products" asp-action="Index">Browse products</a>
+</div>
 
 @if (Model.Total == 0)
 {
-    <p class="text-muted">
-        You have no quotes yet.
-        <a asp-controller="Products" asp-action="Index">Browse products</a> to request one.
-    </p>
+    <div class="empty-state">
+        <div class="es-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 2h9l5 5v15H6z" opacity=".25" /><path d="M8 11h8v1.6H8zm0 4h8v1.6H8z" />
+            </svg>
+        </div>
+        <h5>No quotes yet</h5>
+        <p class="mb-0">
+            <a asp-controller="Products" asp-action="Index">Browse products</a> to request your first quote.
+        </p>
+    </div>
 }
 else
 {
-    <p class="text-muted">Click a quote to see its full details.</p>
-
-    <table class="table table-striped table-hover align-middle">
-        <thead>
-            <tr>
-                <th>Quote #</th>
-                <th>Product</th>
-                <th>Coverage</th>
-                <th>Premium</th>
-                <th>Valid until</th>
-                <th>Status</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var quote in Model.Quotes)
-            {
-                <tr class="detail-row" style="cursor:pointer" data-quote-id="@quote.Id">
-                    <td class="fw-semibold text-decoration-underline">@quote.QuoteNumber</td>
-                    <td>@quote.ProductName</td>
-                    <td>@quote.CoverageAmount.ToString("N0")</td>
-                    <td>@quote.PremiumAmount.ToString("N2")</td>
-                    <td>@quote.ValidUntil.ToString("yyyy-MM-dd")</td>
-                    <td><span class="badge bg-secondary">@quote.Status</span></td>
-                    <td class="text-nowrap" onclick="event.stopPropagation();">
-                        @if (quote.Status == QuoteStatus.Requested)
-                        {
-                            <form asp-action="Accept" asp-route-id="@quote.Id" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-success">Accept</button>
-                            </form>
-                        }
-                        else if (quote.Status == QuoteStatus.AcceptedByCustomer)
-                        {
-                            <small class="text-muted me-2">Waiting for underwriter</small>
-                        }
-                        else if (quote.Status == QuoteStatus.Approved)
-                        {
-                            <a asp-controller="Policies" asp-action="Index" class="btn btn-sm btn-outline-primary">
-                                View policy
-                            </a>
-                        }
-
-                        @* The customer can withdraw a quote until it's decided. *@
-                        @if (quote.Status == QuoteStatus.Requested || quote.Status == QuoteStatus.AcceptedByCustomer)
-                        {
-                            <form asp-action="Cancel" asp-route-id="@quote.Id" method="post" class="d-inline"
-                                  onsubmit="return confirm('Cancel this quote?');">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
-                            </form>
-                        }
-                    </td>
+    <div class="panel">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Quote #</th>
+                    <th>Product</th>
+                    <th>Coverage</th>
+                    <th>Premium</th>
+                    <th>Valid until</th>
+                    <th>Status</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var quote in Model.Quotes)
+                {
+                    <tr class="detail-row" style="cursor:pointer" data-quote-id="@quote.Id">
+                        <td>@quote.QuoteNumber</td>
+                        <td>@quote.ProductName</td>
+                        <td>@quote.CoverageAmount.ToString("N0")</td>
+                        <td>@quote.PremiumAmount.ToString("N2")</td>
+                        <td>@quote.ValidUntil.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            @{
+                                var qcls = quote.Status switch
+                                {
+                                    QuoteStatus.Approved => "pill pill-green",
+                                    QuoteStatus.Rejected => "pill pill-red",
+                                    QuoteStatus.Expired => "pill pill-grey",
+                                    QuoteStatus.AcceptedByCustomer => "pill pill-blue",
+                                    _ => "pill pill-amber"
+                                };
+                            }
+                            <span class="@qcls">@quote.Status</span>
+                        </td>
+                        <td class="text-end text-nowrap" onclick="event.stopPropagation();">
+                            @if (quote.Status == QuoteStatus.Requested)
+                            {
+                                <form asp-action="Accept" asp-route-id="@quote.Id" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-teal">Accept</button>
+                                </form>
+                            }
+                            else if (quote.Status == QuoteStatus.AcceptedByCustomer)
+                            {
+                                <small style="color:var(--body)">Awaiting underwriter</small>
+                            }
+                            else if (quote.Status == QuoteStatus.Approved)
+                            {
+                                <a asp-controller="Policies" asp-action="Index" class="btn btn-sm btn-outline-primary">
+                                    View policy
+                                </a>
+                            }
+
+                            @if (quote.Status == QuoteStatus.Requested || quote.Status == QuoteStatus.AcceptedByCustomer)
+                            {
+                                <form asp-action="Cancel" asp-route-id="@quote.Id" method="post" class="d-inline"
+                                      onsubmit="return confirm('Cancel this quote?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Cancel</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">

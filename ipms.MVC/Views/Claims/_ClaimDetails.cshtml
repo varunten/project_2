@@ -1,6 +1,8 @@
 @model ClaimDto
 @{
     var documents = ViewBag.Documents as List<ClaimDocumentDto> ?? new List<ClaimDocumentDto>();
+    // Staff open this read-only: they view documents but don't attach them.
+    var readOnly = ViewBag.ReadOnly is true;
 }
 
 <div class="d-flex justify-content-between align-items-start mb-3">
@@ -52,6 +54,8 @@ else
 }
 
 @* Metadata only for now - the customer records a document reference, no upload. *@
+@if (!readOnly)
+{
 <form asp-controller="Claims" asp-action="AddDocument" method="post" class="row g-2">
     <input type="hidden" name="claimId" value="@Model.Id" />
     <div class="col-md-4">
@@ -64,6 +68,7 @@ else
         <input name="FileURL" type="url" class="form-control form-control-sm" placeholder="https://..." required />
     </div>
     <div class="col-md-2">
-        <button type="submit" class="btn btn-sm btn-primary w-100">Add</button>
+        <button type="submit" class="btn btn-sm btn-teal w-100">Add</button>
     </div>
 </form>
+}

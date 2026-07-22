@@ -3,18 +3,17 @@
     ViewData["Title"] = "My profile";
 }
 
-<h2>My profile</h2>
-<p class="text-muted">Your details are below. Change anything and save.</p>
+<div class="page-head"><div><h2>My profile</h2><p class="page-sub">Your details are below. Change anything and save.</p></div></div>
 
-<div class="row">
-    <div class="col-md-8">
+<div>
         @* Posts to Edit as an UpdateCustomerDto - the field names match, so the
            values below both display the current profile and submit the edit. *@
-        <form asp-action="Edit" method="post">
+        <form asp-action="Edit" method="post" class="form-panel">
             <div class="row">
                 <div class="col-md-4 mb-3">
                     <label asp-for="FirstName" class="form-label">First name</label>
-                    <input asp-for="FirstName" class="form-control" />
+                    <input asp-for="FirstName" class="form-control" maxlength="50" />
+                    <span asp-validation-for="FirstName" class="text-danger small d-block"></span>
                 </div>
                 <div class="col-md-4 mb-3">
                     <label asp-for="MiddleName" class="form-label">Middle name</label>
@@ -29,11 +28,13 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label asp-for="Email" class="form-label">Email</label>
-                    <input asp-for="Email" class="form-control" />
+                    <input asp-for="Email" class="form-control" placeholder="name@example.com" />
+                    <span asp-validation-for="Email" class="text-danger small d-block"></span>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label asp-for="PhoneNumber" class="form-label">Phone number</label>
-                    <input asp-for="PhoneNumber" class="form-control" />
+                    <input asp-for="PhoneNumber" class="form-control" maxlength="10" inputmode="numeric" placeholder="10-digit US number" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger small d-block"></span>
                 </div>
             </div>
 
@@ -82,7 +83,5 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">Save changes</button>
-        </form>
-    </div>
-</div>
+            <button type="submit" class="btn btn-teal">Save changes</button>
+</form>

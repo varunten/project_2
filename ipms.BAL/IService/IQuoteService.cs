@@ -18,6 +18,9 @@ public interface IQuoteService
     Task<QuoteDto> CancelQuoteAsync(Guid userId, Guid quoteId);
 
     // Underwriter actions.
+    // Any quote, for staff review (not scoped to one customer).
+    Task<QuoteDto> GetQuoteForReviewAsync(Guid quoteId);
+
     // Quotes accepted by a customer and waiting for a decision.
     Task<QuotesDto> GetPendingQuotesAsync();
 

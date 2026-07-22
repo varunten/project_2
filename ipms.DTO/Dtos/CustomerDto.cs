@@ -77,10 +77,19 @@ public class CustomersDto
 
 public class UpdateCustomerDto
 {
+    [StringLength(50, MinimumLength = 2, ErrorMessage = "First name must be between 2 and 50 characters.")]
     public string? FirstName {get; set;}
+
     public string? MiddleName {get; set;}
     public string? LastName {get; set;}
+
+    // Optional on update, but must still be valid when supplied.
+    [RegularExpression(
+        @"^[a-zA-Z0-9._%+-]+@(?!.*\.(?:com|net|org|edu|gov|mil|info|biz|io)\.)[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$",
+        ErrorMessage = "Enter a valid email address (e.g. name@example.com).")]
     public string? Email {get; set;}
+
+    [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be exactly 10 digits (US).")]
     public string? PhoneNumber {get; set;}
     public DateOnly? DateOfBirth {get; set;}
     public CustomerGender? Gender {get; set;}

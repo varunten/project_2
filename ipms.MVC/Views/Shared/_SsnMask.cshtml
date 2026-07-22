@@ -1,0 +1,21 @@
+@* Formats an SSN as the user types: 9 digits shown as xxx-xx-xxxx.
+   Attach to any input with class "ssn-input". *@
+<script>
+    document.querySelectorAll('.ssn-input').forEach(function (input) {
+        function format(value) {
+            var d = value.replace(/\D/g, '').slice(0, 9);      // digits only, max 9
+            if (d.length > 5) return d.slice(0, 3) + '-' + d.slice(3, 5) + '-' + d.slice(5);
+            if (d.length > 3) return d.slice(0, 3) + '-' + d.slice(3);
+            return d;
+        }
+
+        input.addEventListener('input', function () {
+            var atEnd = this.selectionStart === this.value.length;
+            this.value = format(this.value);
+            if (atEnd) this.setSelectionRange(this.value.length, this.value.length);
+        });
+
+        // Also tidy up pasted values.
+        input.addEventListener('blur', function () { this.value = format(this.value); });
+    });
+</script>

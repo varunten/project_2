@@ -3,57 +3,69 @@
     ViewData["Title"] = "My claims";
 }
 
-<h2>My claims</h2>
+<div class="page-head">
+    <div>
+        <h2>My claims</h2>
+        <p class="page-sub">Click a claim to see its details and documents.</p>
+    </div>
+</div>
 
 @if (Model.Total == 0)
 {
-    <p class="text-muted">
-        You have not filed any claims. You can file one from
-        <a asp-controller="Policies" asp-action="Index">your policies</a>.
-    </p>
+    <div class="empty-state">
+        <div class="es-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 2h9l5 5v15H6z" opacity=".25" /><path d="m9 13 2 2 4-4" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+        <h5>No claims filed</h5>
+        <p class="mb-0">
+            You can file one from <a asp-controller="Policies" asp-action="Index">your policies</a>.
+        </p>
+    </div>
 }
 else
 {
-    <p class="text-muted">Click a claim to see its details and documents.</p>
-
-    <table class="table table-striped table-hover align-middle">
-        <thead>
-            <tr>
-                <th>Claim #</th>
-                <th>Incident date</th>
-                <th>Amount</th>
-                <th>Approved</th>
-                <th>Reason</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var claim in Model.Claims)
-            {
-                <tr class="detail-row" style="cursor:pointer" data-claim-id="@claim.Id">
-                    <td class="fw-semibold text-decoration-underline">@claim.ClaimNumber</td>
-                    <td>@claim.IncidentDate.ToString("yyyy-MM-dd")</td>
-                    <td>@claim.ClaimAmount.ToString("N2")</td>
-                    <td>@(claim.ApprovedAmount?.ToString("N2") ?? "-")</td>
-                    <td>@claim.Reason</td>
-                    <td>
-                        @if (claim.Status == ClaimStatus.Approved)
-                        {
-                            <span class="badge bg-success">@claim.Status</span>
-                        }
-                        else if (claim.Status == ClaimStatus.Rejected)
-                        {
-                            <span class="badge bg-danger">@claim.Status</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">@claim.Status</span>
-                        }
-                    </td>
+    <div class="panel">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Claim #</th>
+                    <th>Incident date</th>
+                    <th>Amount</th>
+                    <th>Approved</th>
+                    <th>Reason</th>
+                    <th>Status</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var claim in Model.Claims)
+                {
+                    <tr class="detail-row" style="cursor:pointer" data-claim-id="@claim.Id">
+                        <td>@claim.ClaimNumber</td>
+                        <td>@claim.IncidentDate.ToString("yyyy-MM-dd")</td>
+                        <td>@claim.ClaimAmount.ToString("N2")</td>
+                        <td>@(claim.ApprovedAmount?.ToString("N2") ?? "—")</td>
+                        <td>@claim.Reason</td>
+                        <td>
+                            @{
+                                var ccls = claim.Status switch
+                                {
+                                    ClaimStatus.Approved => "pill pill-green",
+                                    ClaimStatus.Rejected => "pill pill-red",
+                                    ClaimStatus.Closed => "pill pill-grey",
+                                    ClaimStatus.UnderReview => "pill pill-blue",
+                                    _ => "pill pill-amber"
+                                };
+                            }
+                            <span class="@ccls">@claim.Status</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">

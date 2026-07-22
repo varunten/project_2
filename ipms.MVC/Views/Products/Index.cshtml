@@ -6,60 +6,72 @@
     var isAgent = roles.Contains(Roles.InsuranceAgent);
 }
 
-<div class="d-flex justify-content-between align-items-center">
-    <h2>Insurance products</h2>
+<div class="page-head">
+    <div>
+        <h2>Insurance products</h2>
+        <p class="page-sub">@Model.Total product(s) available to quote.</p>
+    </div>
     @if (isAgent)
     {
-        <a class="btn btn-sm btn-primary" asp-controller="Products" asp-action="Create">Add product</a>
+        <a class="btn btn-teal" asp-controller="Products" asp-action="Create">+ Add product</a>
     }
 </div>
 
 @if (Model.Total == 0)
 {
-    <p class="text-muted">No products are available right now.</p>
+    <div class="empty-state">
+        <div class="es-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2 3 6v6c0 5.25 3.75 8.25 9 10 5.25-1.75 9-4.75 9-10V6z" />
+            </svg>
+        </div>
+        <h5>No products yet</h5>
+        <p class="mb-0">There are no insurance products available right now.</p>
+    </div>
 }
 else
 {
-    <table class="table table-striped align-middle">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Coverage</th>
-                <th>Base premium</th>
-                <th>Ages</th>
-                <th>Term</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var product in Model.Products)
-            {
+    <div class="panel">
+        <table class="table align-middle">
+            <thead>
                 <tr>
-                    <td>
-                        @product.Name
-                        @if (!string.IsNullOrEmpty(product.Description))
-                        {
-                            <br />
-                            <small class="text-muted">@product.Description</small>
-                        }
-                    </td>
-                    <td>@product.Type</td>
-                    <td>@product.CoverageAmount.ToString("N0")</td>
-                    <td>@product.BasePremium.ToString("N2")</td>
-                    <td>@product.MinAge - @product.MaxAge</td>
-                    <td>@product.PolicyTermYears yrs</td>
-                    <td>
-                        @* Only customers can buy insurance - staff just browse. *@
-                        @if (isCustomer)
-                        {
-                            <a class="btn btn-sm btn-primary"
-                               asp-controller="Quotes" asp-action="Create"
-                               asp-route-productId="@product.Id">Request a quote</a>
-                        }
-                    </td>
+                    <th>Product</th>
+                    <th>Type</th>
+                    <th>Coverage</th>
+                    <th>Base premium</th>
+                    <th>Ages</th>
+                    <th>Term</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var product in Model.Products)
+                {
+                    <tr>
+                        <td>
+                            @product.Name
+                            @if (!string.IsNullOrEmpty(product.Description))
+                            {
+                                <div class="fw-normal" style="font-size:.8rem; color:var(--body)">@product.Description</div>
+                            }
+                        </td>
+                        <td><span class="pill pill-blue">@product.Type</span></td>
+                        <td>@product.CoverageAmount.ToString("N0")</td>
+                        <td>@product.BasePremium.ToString("N2")</td>
+                        <td>@product.MinAge&ndash;@product.MaxAge</td>
+                        <td>@product.PolicyTermYears yrs</td>
+                        <td class="text-end">
+                            @* Only customers can buy insurance - staff just browse. *@
+                            @if (isCustomer)
+                            {
+                                <a class="btn btn-sm btn-teal"
+                                   asp-controller="Quotes" asp-action="Create"
+                                   asp-route-productId="@product.Id">Request a quote</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }

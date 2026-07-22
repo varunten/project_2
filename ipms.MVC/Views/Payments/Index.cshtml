@@ -4,16 +4,21 @@
     var policyId = (Guid)ViewBag.PolicyId;
 }
 
-<h2>Premium payments</h2>
-<p><a asp-controller="Policies" asp-action="Index">&larr; Back to my policies</a></p>
+<div class="page-head">
+    <div>
+        <h2>Premium payments</h2>
+        <p class="page-sub"><a asp-controller="Policies" asp-action="Index">&larr; Back to my policies</a></p>
+    </div>
+</div>
 
 @if (Model.Total == 0)
 {
-    <p class="text-muted">No installments have been generated for this policy yet.</p>
+    <div class="empty-state"><h5>No installments yet</h5><p class="mb-0">Nothing has been generated for this policy.</p></div>
 }
 else
 {
-    <table class="table table-striped align-middle">
+    <div class="panel">
+    <table class="table align-middle">
         <thead>
             <tr>
                 <th>Installment</th>
@@ -67,4 +72,5 @@ else
             }
         </tbody>
     </table>
+    </div>
 }

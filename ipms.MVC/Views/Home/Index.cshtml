@@ -1,38 +1,91 @@
 @{
     ViewData["Title"] = "Home";
+    ViewData["FullWidth"] = true;
     var isLoggedIn = !string.IsNullOrEmpty(Context.Session.GetString(SessionKeys.AccessToken));
 }
 
 <section class="hero">
-    <div class="row align-items-center g-5">
-        <div class="col-lg-6">
-            <h1>Reduce risk and keep <span class="text-accent">life good</span></h1>
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <h1>Life More Relaxed<br />With Smart Insurance</h1>
+                <p class="hero-lead">
+                    Compare products, get an instant quote, and manage your policies,
+                    premiums and claims &mdash; all in one place.
+                </p>
 
-            <p class="hero-lead">
-                Compare products, get an instant quote, and manage your policies,
-                premiums and claims &mdash; all in one place.
-            </p>
-
-            <div class="d-flex align-items-center gap-3 mt-4">
                 @if (!isLoggedIn)
                 {
-                    <a asp-controller="Account" asp-action="Signup" class="btn btn-primary btn-lg">Sign Up</a>
-                    <a asp-controller="Account" asp-action="Login" class="text-accent fw-semibold">Sign in &rarr;</a>
+                    <a asp-controller="Account" asp-action="Signup" class="btn btn-teal btn-lg me-2">Sign Up</a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-ink btn-lg">Sign in</a>
                 }
                 else
                 {
-                    <a asp-controller="Products" asp-action="Index" class="btn btn-primary btn-lg">Browse products</a>
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-teal btn-lg">Browse products</a>
                 }
             </div>
+
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    <div class="hero-panel">
+                        <svg class="panel-art" viewBox="0 0 24 26" aria-hidden="true">
+                            <path d="M12 1.5 2.5 5.6v6.2c0 6.6 4.2 10.4 9.5 12.4 5.3-2 9.5-5.8 9.5-12.4V5.6z" stroke-linejoin="round" />
+                            <path d="M12 16.6s-4.2-2.6-4.2-5.7a2.7 2.7 0 0 1 4.2-2.2 2.7 2.7 0 0 1 4.2 2.2c0 3.1-4.2 5.7-4.2 5.7Z" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+
+                    <div class="float-card float-clients">
+                        <span class="fc-title">Quotes in seconds</span>
+                        <span class="fc-sub">Reviewed by real underwriters</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">What We Provide</h2>
+            <p class="section-sub">The cover we offer, and how it works.</p>
         </div>
 
-        <div class="col-lg-6">
-            <div class="hero-art">
-                <span class="hero-dots"></span>
-                <div class="hero-panel">
-                    <span class="hero-badge">Best of<br />Services</span>
-                    <h5 class="mb-2">Everything in one place</h5>
-                    <p class="mb-0">Quotes, policies, premiums and claims &mdash; handled online.</p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="tile tile-blue">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 21s-7-4.35-7-9.5A4.5 4.5 0 0 1 12 8a4.5 4.5 0 0 1 7 3.5C19 16.65 12 21 12 21" />
+                        </svg>
+                    </div>
+                    <h5>Health &amp; Life</h5>
+                    <p class="mb-0">Cover for medical expenses and financial protection for your family.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="tile tile-green">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2 3 6v6c0 5.25 3.75 8.25 9 10 5.25-1.75 9-4.75 9-10V6z" />
+                        </svg>
+                    </div>
+                    <h5>Quote to policy</h5>
+                    <p class="mb-0">Request a quote, accept it, and an underwriter issues your policy.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="tile tile-orange">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M4 5h16v4H4zm0 6h16v8H4z" opacity=".55" />
+                            <path d="M4 5h16v4H4z" />
+                        </svg>
+                    </div>
+                    <h5>Premiums &amp; claims</h5>
+                    <p class="mb-0">Pay premiums on schedule and file claims online, then track them.</p>
                 </div>
             </div>
         </div>

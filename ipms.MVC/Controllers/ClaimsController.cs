@@ -61,6 +61,8 @@ public class ClaimsController : BaseController
         if (!IsLoggedIn)
             return RedirectToAction("Login", "Account");
 
+        if (!ModelState.IsValid) return View(payload);
+
         try
         {
             await _api.CreateClaimAsync(payload);
@@ -144,6 +146,28 @@ public class ClaimsController : BaseController
 
             TempData["Error"] = ex.Message;
             return View(new ClaimsDto { Total = 0, Claims = [] });
+        }
+    }
+
+
+    // Staff view of a single claim (used by the Review page modal).
+    [HttpGet]
+    public async Task<IActionResult> ReviewDetails(Guid id)
+    {
+        if (!IsLoggedIn)
+            return Content("Your session has expired. Please sign in again.");
+
+        try
+        {
+            ClaimDto claim = await _api.GetClaimForReviewAsync(id);
+            List<ClaimDocumentDto> documents = await _api.GetClaimDocumentsAsync(id);
+            ViewBag.Documents = documents;
+            ViewBag.ReadOnly = true;
+            return PartialView("_ClaimDetails", claim);
+        }
+        catch (ApiException ex)
+        {
+            return Content(ex.Message);
         }
     }
 

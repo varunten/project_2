@@ -3,55 +3,116 @@
     ViewData["Title"] = "Review claims";
 }
 
-<h2>Claims</h2>
-<p class="text-muted">Approving a claim settles it for the full claimed amount.</p>
+<div class="page-head">
+    <div>
+        <h2>Claims</h2>
+        <p class="page-sub">
+            Click a claim to see its details and documents. Approving settles it for the full claimed amount.
+        </p>
+    </div>
+</div>
 
 @if (Model.Total == 0)
 {
-    <p class="text-muted">No claims have been filed.</p>
+    <div class="empty-state">
+        <div class="es-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 2h9l5 5v15H6z" opacity=".25" />
+                <path d="m9 13 2 2 4-4" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+        <h5>No claims</h5>
+        <p class="mb-0">No claims have been filed yet.</p>
+    </div>
 }
 else
 {
-    <table class="table table-striped align-middle">
-        <thead>
-            <tr>
-                <th>Claim #</th>
-                <th>Incident</th>
-                <th>Amount</th>
-                <th>Reason</th>
-                <th>Status</th>
-                <th>Decision</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var claim in Model.Claims)
-            {
+    <div class="panel">
+        <table class="table align-middle">
+            <thead>
                 <tr>
-                    <td>@claim.ClaimNumber</td>
-                    <td>@claim.IncidentDate.ToString("yyyy-MM-dd")</td>
-                    <td>@claim.ClaimAmount.ToString("N2")</td>
-                    <td>@claim.Reason</td>
-                    <td><span class="badge bg-secondary">@claim.Status</span></td>
-                    <td>
-                        @if (claim.Status == ClaimStatus.Submitted || claim.Status == ClaimStatus.UnderReview)
-                        {
-                            <form asp-action="Decide" method="post" class="d-flex gap-2">
-                                <input type="hidden" name="id" value="@claim.Id" />
-                                <input type="text" name="notes" class="form-control form-control-sm"
-                                       placeholder="Notes" style="max-width:180px" />
-                                <button type="submit" name="status" value="@((int)ClaimStatus.Approved)"
-                                        class="btn btn-sm btn-success">Approve</button>
-                                <button type="submit" name="status" value="@((int)ClaimStatus.Rejected)"
-                                        class="btn btn-sm btn-outline-danger">Reject</button>
-                            </form>
-                        }
-                        else
-                        {
-                            <small class="text-muted">Settled @claim.SettledDate?.ToString("yyyy-MM-dd")</small>
-                        }
-                    </td>
+                    <th>Claim #</th>
+                    <th>Incident</th>
+                    <th>Amount</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Decision</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var claim in Model.Claims)
+                {
+                    <tr class="detail-row" style="cursor:pointer" data-claim-id="@claim.Id">
+                        <td>@claim.ClaimNumber</td>
+                        <td>@claim.IncidentDate.ToString("yyyy-MM-dd")</td>
+                        <td>@claim.ClaimAmount.ToString("N2")</td>
+                        <td>@claim.Reason</td>
+                        <td>
+                            @{
+                                var ccls = claim.Status switch
+                                {
+                                    ClaimStatus.Approved => "pill pill-green",
+                                    ClaimStatus.Rejected => "pill pill-red",
+                                    ClaimStatus.Closed => "pill pill-grey",
+                                    ClaimStatus.UnderReview => "pill pill-blue",
+                                    _ => "pill pill-amber"
+                                };
+                            }
+                            <span class="@ccls">@claim.Status</span>
+                        </td>
+                        <td onclick="event.stopPropagation();">
+                            @if (claim.Status == ClaimStatus.Submitted || claim.Status == ClaimStatus.UnderReview)
+                            {
+                                <form asp-action="Decide" method="post" class="d-flex gap-2">
+                                    <input type="hidden" name="id" value="@claim.Id" />
+                                    <input type="text" name="notes" class="form-control form-control-sm"
+                                           placeholder="Notes" style="max-width:170px" />
+                                    <button type="submit" name="status" value="@((int)ClaimStatus.Approved)"
+                                            class="btn btn-sm btn-teal">Approve</button>
+                                    <button type="submit" name="status" value="@((int)ClaimStatus.Rejected)"
+                                            class="btn btn-sm btn-outline-secondary">Reject</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <small style="color:var(--body)">Settled @claim.SettledDate?.ToString("yyyy-MM-dd")</small>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="detailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Claim details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="detailModalBody"></div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.detail-row').forEach(function (row) {
+            row.addEventListener('click', function () {
+                var body = document.getElementById('detailModalBody');
+                body.innerHTML = '<p class="text-muted">Loading...</p>';
+                new bootstrap.Modal(document.getElementById('detailModal')).show();
+
+                fetch('/Claims/ReviewDetails/' + this.dataset.claimId)
+                    .then(function (r) { return r.text(); })
+                    .then(function (html) { body.innerHTML = html; })
+                    .catch(function () {
+                        body.innerHTML = '<p class="text-danger">Could not load this claim.</p>';
+                    });
+            });
+        });
+    </script>
 }

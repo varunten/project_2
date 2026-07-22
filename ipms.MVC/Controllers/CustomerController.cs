@@ -59,6 +59,8 @@ public class CustomerController : BaseController
         if (!IsLoggedIn)
             return RedirectToAction("Login", "Account");
 
+        if (!ModelState.IsValid) return View(payload);
+
         try
         {
             await _api.CreateCustomerAsync(payload);

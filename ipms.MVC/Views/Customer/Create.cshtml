@@ -3,74 +3,78 @@
     ViewData["Title"] = "My profile";
 }
 
-<h2>Create your customer profile</h2>
-<p class="text-muted">You need a profile before you can request a quote.</p>
-
-<div class="row">
-    <div class="col-md-8">
-        <form asp-action="Create" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
-
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label asp-for="DateOfBirth" class="form-label">Date of birth</label>
-                    <input asp-for="DateOfBirth" type="date" class="form-control" />
-                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                    <label asp-for="Gender" class="form-label">Gender</label>
-                    <select asp-for="Gender" asp-items="Html.GetEnumSelectList<CustomerGender>()" class="form-select"></select>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                    <label asp-for="MaritalStatus" class="form-label">Marital status</label>
-                    <select asp-for="MaritalStatus" asp-items="Html.GetEnumSelectList<MaritalStatus>()" class="form-select"></select>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="SSN" class="form-label">SSN</label>
-                <input asp-for="SSN" class="form-control" placeholder="123-45-6789" />
-                <span asp-validation-for="SSN" class="text-danger"></span>
-            </div>
-
-            <h5 class="mt-4">Address</h5>
-
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <label asp-for="Address.HouseNumber" class="form-label">House no.</label>
-                    <input asp-for="Address.HouseNumber" class="form-control" />
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label asp-for="Address.StreetName" class="form-label">Street</label>
-                    <input asp-for="Address.StreetName" class="form-control" />
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label asp-for="Address.StreetSuffix" class="form-label">Suffix</label>
-                    <input asp-for="Address.StreetSuffix" class="form-control" placeholder="Ave" />
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-5 mb-3">
-                    <label asp-for="Address.City" class="form-label">City</label>
-                    <input asp-for="Address.City" class="form-control" />
-                    <span asp-validation-for="Address.City" class="text-danger"></span>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label asp-for="Address.State" class="form-label">State</label>
-                    <input asp-for="Address.State" class="form-control" placeholder="TX" />
-                    <span asp-validation-for="Address.State" class="text-danger"></span>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label asp-for="Address.ZipCode" class="form-label">Zip code</label>
-                    <input asp-for="Address.ZipCode" class="form-control" placeholder="78701" />
-                    <span asp-validation-for="Address.ZipCode" class="text-danger"></span>
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Save profile</button>
-        </form>
+<div class="page-head">
+    <div>
+        <h2>Create your customer profile</h2>
+        <p class="page-sub">You need a profile before you can request a quote.</p>
     </div>
 </div>
+
+<form asp-action="Create" method="post" class="form-panel">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <label asp-for="DateOfBirth" class="form-label">Date of birth</label>
+            <input asp-for="DateOfBirth" type="date" class="form-control" />
+            <span asp-validation-for="DateOfBirth" class="text-danger small d-block"></span>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label asp-for="Gender" class="form-label">Gender</label>
+            <select asp-for="Gender" asp-items="Html.GetEnumSelectList<CustomerGender>()" class="form-select"></select>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label asp-for="MaritalStatus" class="form-label">Marital status</label>
+            <select asp-for="MaritalStatus" asp-items="Html.GetEnumSelectList<MaritalStatus>()" class="form-select"></select>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label asp-for="SSN" class="form-label">SSN</label>
+            <input asp-for="SSN" class="form-control ssn-input" inputmode="numeric"
+                   maxlength="11" placeholder="123-45-6789" autocomplete="off" />
+            <span asp-validation-for="SSN" class="text-danger small d-block"></span>
+        </div>
+    </div>
+
+    <h6 class="mt-2 mb-3">Address</h6>
+
+    <div class="row">
+        <div class="col-md-2 mb-3">
+            <label asp-for="Address.HouseNumber" class="form-label">House no.</label>
+            <input asp-for="Address.HouseNumber" class="form-control" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Address.StreetName" class="form-label">Street</label>
+            <input asp-for="Address.StreetName" class="form-control" />
+        </div>
+        <div class="col-md-2 mb-3">
+            <label asp-for="Address.StreetSuffix" class="form-label">Suffix</label>
+            <input asp-for="Address.StreetSuffix" class="form-control" placeholder="Ave" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Address.City" class="form-label">City</label>
+            <input asp-for="Address.City" class="form-control" />
+            <span asp-validation-for="Address.City" class="text-danger small d-block"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <label asp-for="Address.State" class="form-label">State</label>
+            <input asp-for="Address.State" class="form-control" placeholder="TX" />
+            <span asp-validation-for="Address.State" class="text-danger small d-block"></span>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label asp-for="Address.ZipCode" class="form-label">Zip code</label>
+            <input asp-for="Address.ZipCode" class="form-control" placeholder="78701" />
+            <span asp-validation-for="Address.ZipCode" class="text-danger small d-block"></span>
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <button type="submit" class="btn btn-teal">Save profile</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_SsnMask" />
+}

@@ -39,6 +39,25 @@ public class UnderwritingController : BaseController
     }
 
 
+    // Loaded into the review modal so the underwriter can inspect the quote.
+    [HttpGet]
+    public async Task<IActionResult> Details(Guid id)
+    {
+        if (!IsLoggedIn)
+            return Content("Your session has expired. Please sign in again.");
+
+        try
+        {
+            QuoteDto quote = await _api.GetQuoteForReviewAsync(id);
+            return PartialView("~/Views/Quotes/_QuoteDetails.cshtml", quote);
+        }
+        catch (ApiException ex)
+        {
+            return Content(ex.Message);
+        }
+    }
+
+
     [HttpPost]
     public async Task<IActionResult> Approve(Guid id)
     {

@@ -3,11 +3,11 @@
     ViewData["Title"] = "File a claim";
 }
 
-<h2>File a claim</h2>
+<div class="page-head"><div><h2>File a claim</h2></div></div>
 
 <div class="row">
     <div class="col-md-6">
-        <form asp-action="Create" method="post">
+        <form asp-action="Create" method="post" class="form-panel">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
 
             <input type="hidden" asp-for="PolicyId" />

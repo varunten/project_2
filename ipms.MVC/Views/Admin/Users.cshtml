@@ -4,21 +4,22 @@
     var assignable = new[] { Roles.Admin, Roles.InsuranceAgent, Roles.Underwriter, Roles.Customer };
 }
 
-<div class="d-flex justify-content-between align-items-center">
-    <h2>Users <span class="text-muted fs-6">(@Model.Total)</span></h2>
+<div class="page-head">
     <div>
-        <a class="btn btn-sm btn-primary" asp-action="CreateStaff">Create staff</a>
-        <a class="btn btn-sm btn-outline-secondary" asp-action="CreateProduct">Add product</a>
+        <h2>Users</h2>
+        <p class="page-sub">@Model.Total account(s) registered.</p>
     </div>
+    <a class="btn btn-teal" asp-action="CreateStaff">+ Create staff</a>
 </div>
 
 @if (Model.Total == 0)
 {
-    <p class="text-muted">No users.</p>
+    <div class="empty-state"><h5>No users</h5><p class="mb-0">No accounts exist yet.</p></div>
 }
 else
 {
-    <table class="table table-striped align-middle">
+    <div class="panel">
+    <table class="table align-middle">
         <thead>
             <tr>
                 <th>Name</th>
@@ -59,6 +60,7 @@ else
             }
         </tbody>
     </table>
+    </div>
 
     <p class="text-muted">
         <small>A promoted user must sign in again before the new role takes effect.</small>

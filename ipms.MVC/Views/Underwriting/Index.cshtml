@@ -3,49 +3,96 @@
     ViewData["Title"] = "Review quotes";
 }
 
-<h2>Quotes awaiting review</h2>
-<p class="text-muted">
-    These quotes have been accepted by the customer. Approving one issues the policy.
-</p>
+<div class="page-head">
+    <div>
+        <h2>Quotes awaiting review</h2>
+        <p class="page-sub">
+            Accepted by the customer and waiting for a decision. Click a quote to inspect it.
+        </p>
+    </div>
+</div>
 
 @if (Model.Total == 0)
 {
-    <p class="text-muted">Nothing to review right now.</p>
+    <div class="empty-state">
+        <div class="es-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 2h9l5 5v15H6z" opacity=".25" />
+                <path d="m9 13 2 2 4-4" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+        <h5>Queue is clear</h5>
+        <p class="mb-0">Nothing to review right now.</p>
+    </div>
 }
 else
 {
-    <table class="table table-striped align-middle">
-        <thead>
-            <tr>
-                <th>Quote #</th>
-                <th>Product</th>
-                <th>Coverage</th>
-                <th>Premium</th>
-                <th>Quoted</th>
-                <th>Valid until</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var quote in Model.Quotes)
-            {
+    <div class="panel">
+        <table class="table align-middle">
+            <thead>
                 <tr>
-                    <td>@quote.QuoteNumber</td>
-                    <td>@quote.ProductName</td>
-                    <td>@quote.CoverageAmount.ToString("N0")</td>
-                    <td>@quote.PremiumAmount.ToString("N2")</td>
-                    <td>@quote.QuoteDate.ToString("yyyy-MM-dd")</td>
-                    <td>@quote.ValidUntil.ToString("yyyy-MM-dd")</td>
-                    <td class="text-nowrap">
-                        <form asp-action="Approve" asp-route-id="@quote.Id" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
-                        </form>
-                        <form asp-action="Reject" asp-route-id="@quote.Id" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Reject</button>
-                        </form>
-                    </td>
+                    <th>Quote #</th>
+                    <th>Product</th>
+                    <th>Coverage</th>
+                    <th>Premium</th>
+                    <th>Quoted</th>
+                    <th>Valid until</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var quote in Model.Quotes)
+                {
+                    <tr class="detail-row" style="cursor:pointer" data-quote-id="@quote.Id">
+                        <td>@quote.QuoteNumber</td>
+                        <td>@quote.ProductName</td>
+                        <td>@quote.CoverageAmount.ToString("N0")</td>
+                        <td>@quote.PremiumAmount.ToString("N2")</td>
+                        <td>@quote.QuoteDate.ToString("yyyy-MM-dd")</td>
+                        <td>@quote.ValidUntil.ToString("yyyy-MM-dd")</td>
+                        <td class="text-end text-nowrap" onclick="event.stopPropagation();">
+                            <form asp-action="Approve" asp-route-id="@quote.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-teal">Approve</button>
+                            </form>
+                            <form asp-action="Reject" asp-route-id="@quote.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="detailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Quote details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="detailModalBody"></div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.detail-row').forEach(function (row) {
+            row.addEventListener('click', function () {
+                var body = document.getElementById('detailModalBody');
+                body.innerHTML = '<p class="text-muted">Loading...</p>';
+                new bootstrap.Modal(document.getElementById('detailModal')).show();
+
+                fetch('/Underwriting/Details/' + this.dataset.quoteId)
+                    .then(function (r) { return r.text(); })
+                    .then(function (html) { body.innerHTML = html; })
+                    .catch(function () {
+                        body.innerHTML = '<p class="text-danger">Could not load this quote.</p>';
+                    });
+            });
+        });
+    </script>
 }

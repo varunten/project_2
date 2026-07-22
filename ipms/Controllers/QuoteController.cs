@@ -81,6 +81,16 @@ public class QuoteController : ControllerBase
     }
 
 
+    // Full details of any quote, so an underwriter can inspect before deciding.
+    [HttpGet("review/{quote_id}")]
+    [Authorize(Roles = Roles.Underwriter)]
+    public async Task<ActionResult<ApiResponse<QuoteDto>>> GetQuoteForReview(Guid quote_id)
+    {
+        QuoteDto result = await _service.GetQuoteForReviewAsync(quote_id);
+        return Ok(ApiResponse.Ok(result, "Quote retrieved."));
+    }
+
+
     [HttpPatch("{quote_id}/approve")]
     [Authorize(Roles = Roles.Underwriter)]
     public async Task<ActionResult<ApiResponse<PolicyDto>>> ApproveQuote(Guid quote_id)

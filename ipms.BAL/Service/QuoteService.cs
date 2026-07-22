@@ -127,6 +127,16 @@ public class QuoteService : IQuoteService
     }
 
 
+    public async Task<QuoteDto> GetQuoteForReviewAsync(Guid quoteId)
+    {
+        Quote quote = await _quoteRepository.GetByIdAsync(quoteId)
+            ?? throw new NotFoundException("Quote not found.");
+
+        string productName = await GetProductName(quote.ProductId);
+        return MapToDto(quote, productName);
+    }
+
+
     public async Task<QuotesDto> GetPendingQuotesAsync()
     {
         List<Quote> quotes = await _quoteRepository.GetPendingForReviewAsync();

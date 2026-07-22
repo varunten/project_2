@@ -89,6 +89,9 @@ public class IpmsApiClient
     public Task<QuotesDto> GetPendingQuotesAsync() =>
         SendAsync<QuotesDto>(HttpMethod.Get, "api/quote/pending");
 
+    public Task<QuoteDto> GetQuoteForReviewAsync(Guid quoteId) =>
+        SendAsync<QuoteDto>(HttpMethod.Get, $"api/quote/review/{quoteId}");
+
     // Approving a quote issues the policy, so the API hands back the policy.
     public Task<PolicyDto> ApproveQuoteAsync(Guid quoteId) =>
         SendAsync<PolicyDto>(HttpMethod.Patch, $"api/quote/{quoteId}/approve");
@@ -141,6 +144,9 @@ public class IpmsApiClient
     // Staff / underwriter
     public Task<ClaimsDto> GetAllClaimsAsync() =>
         SendAsync<ClaimsDto>(HttpMethod.Get, "api/claim");
+
+    public Task<ClaimDto> GetClaimForReviewAsync(Guid claimId) =>
+        SendAsync<ClaimDto>(HttpMethod.Get, $"api/claim/{claimId}");
 
     public Task<ClaimDto> UpdateClaimAsync(Guid claimId, UpdateClaimDto payload) =>
         SendAsync<ClaimDto>(HttpMethod.Patch, $"api/claim/{claimId}", payload);

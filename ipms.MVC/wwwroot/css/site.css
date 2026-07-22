@@ -1,96 +1,95 @@
 /* ==========================================================================
-   IPMS theme - adapted from the "Graby insur" reference design.
-   Deep navy + spring green + mint, bold headings, rounded buttons.
-   Layered on top of Bootstrap (we only override a handful of things).
+   IPMS theme - modelled on the "Mallianz" insurance landing page reference.
+   Signature: serif headings, teal primary, deep slate-blue text, soft cards.
+   Layered on top of Bootstrap.
    ========================================================================== */
 
 :root {
-    --navy: #14226b;
-    --navy-dark: #0e1a52;
-    --green: #33b98f;
-    --green-dark: #2aa079;
-    --mint: #bfe9d8;
-    --mint-soft: #e7f6ef;
-    --ink: #1f2733;
-    --muted: #6b7280;
-    --paper: #f4f6f8;
-    --line: #e9ecf2;
+    --teal: #2ec4a6;         /* primary actions / accents */
+    --teal-dark: #23a88d;
+    --teal-soft: #e6f7f2;
+
+    --ink: #0d3b52;          /* headings + dark buttons  */
+    --ink-dark: #092c3e;
+    --body: #6b7280;         /* paragraph text           */
+
+    --bg-soft: #f2f8fb;      /* hero / band background   */
+    --line: #e8edf1;
+
+    /* pastel tiles for the feature icons */
+    --tile-blue: #e8f1fd;
+    --tile-green: #e4f6ef;
+    --tile-orange: #fdf0e0;
 }
 
 body {
-    color: var(--ink);
+    color: var(--body);
     background: #fff;
-    /* Sticky footer: the page is a column at least as tall as the viewport,
-       and <main> grows to fill it, pushing the footer to the bottom even on
-       short pages. */
+    font-family: 'Poppins', -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    /* sticky footer */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
-main {
-    flex: 1 0 auto;
-}
-.site-footer {
-    flex-shrink: 0;
-}
+main { flex: 1 0 auto; }
+.site-footer { flex-shrink: 0; }
 
-h1, h2, h3, h4, h5, h6 {
-    font-weight: 800;
-    color: var(--navy);
-    letter-spacing: -0.01em;
+/* Serif headings are the signature of the reference design. */
+h1, h2, h3, h4, h5, .serif {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    color: var(--ink);
+    font-weight: 700;
 }
+h6 { color: var(--ink); font-weight: 600; }
 
-a {
-    color: var(--navy);
-    text-decoration: none;
-}
-a:hover {
-    color: var(--green);
-}
+a { color: var(--ink); text-decoration: none; }
+a:hover { color: var(--teal); }
 
-.text-accent { color: var(--green) !important; }
-.bg-paper { background: var(--paper); }
+.text-accent { color: var(--teal) !important; }
+.text-ink { color: var(--ink) !important; }
+.bg-soft { background: var(--bg-soft); }
 
 
 /* ---- Buttons ---- */
 
 .btn {
-    border-radius: 8px;
-    font-weight: 600;
-    padding: 0.5rem 1.15rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.5rem 1.25rem;
 }
-
-.btn-primary {
-    background-color: var(--navy);
-    border-color: var(--navy);
-}
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
-    background-color: var(--navy-dark) !important;
-    border-color: var(--navy-dark) !important;
-}
-
-.btn-accent {
-    background-color: var(--green);
-    border-color: var(--green);
+.btn-teal, .btn-primary, .btn-accent {
+    background-color: var(--teal);
+    border-color: var(--teal);
     color: #fff;
 }
-.btn-accent:hover, .btn-accent:focus {
-    background-color: var(--green-dark);
-    border-color: var(--green-dark);
+.btn-teal:hover, .btn-primary:hover, .btn-accent:hover,
+.btn-teal:focus, .btn-primary:focus, .btn-primary:active {
+    background-color: var(--teal-dark) !important;
+    border-color: var(--teal-dark) !important;
     color: #fff;
 }
-
+.btn-ink {
+    background-color: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+}
+.btn-ink:hover, .btn-ink:focus {
+    background-color: var(--ink-dark);
+    border-color: var(--ink-dark);
+    color: #fff;
+}
 .btn-outline-primary {
-    color: var(--navy);
-    border-color: var(--navy);
+    color: var(--ink);
+    border-color: var(--line);
 }
 .btn-outline-primary:hover {
-    background-color: var(--navy);
-    border-color: var(--navy);
+    background-color: var(--ink);
+    border-color: var(--ink);
     color: #fff;
 }
-
-.btn-sm { padding: 0.3rem 0.7rem; }
+.btn-outline-secondary { color: var(--body); border-color: var(--line); }
+.btn-sm { padding: 0.3rem 0.75rem; font-size: 0.85rem; }
 
 
 /* ---- Navbar ---- */
@@ -98,160 +97,471 @@ a:hover {
 .navbar-ipms {
     background: #fff;
     border-bottom: 1px solid var(--line);
-    padding-top: 0.7rem;
-    padding-bottom: 0.7rem;
+    padding: 0.85rem 0;
 }
 .navbar-ipms .navbar-brand {
-    color: var(--navy);
-    font-weight: 800;
-    font-size: 1.35rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    color: var(--ink);
+    font-weight: 700;
+    font-size: 1.4rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 .navbar-ipms .nav-link {
-    color: var(--navy);
-    font-weight: 600;
-    padding-left: 0.85rem;
-    padding-right: 0.85rem;
+    color: var(--body);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.4rem 0.9rem;
 }
-.navbar-ipms .nav-link:hover {
-    color: var(--green);
-}
-.navbar-ipms .navbar-text {
-    color: var(--muted);
-}
+.navbar-ipms .nav-link:hover { color: var(--teal); }
+.navbar-ipms .navbar-text { color: var(--body); font-size: 0.9rem; }
 
 
 /* ---- Hero ---- */
 
 .hero {
-    padding: 3.5rem 0 4rem;
+    background: linear-gradient(160deg, #f7fbfd 0%, #eef6fb 55%, #ffffff 100%);
+    padding: 4rem 0 4.5rem;
+    position: relative;
+    overflow: hidden;
 }
 .hero h1 {
-    font-size: clamp(2.4rem, 5vw, 3.6rem);
-    line-height: 1.08;
-    margin-bottom: 1.25rem;
+    font-size: clamp(2.3rem, 4.4vw, 3.4rem);
+    line-height: 1.22;
+    margin-bottom: 1.1rem;
 }
 .hero-lead {
-    color: var(--muted);
-    font-size: 1.1rem;
-    max-width: 30rem;
+    color: var(--body);
+    max-width: 27rem;
+    margin-bottom: 1.75rem;
 }
-
-/* the decorative panel on the right */
-.hero-art {
-    position: relative;
-    min-height: 340px;
-}
-.hero-panel {
-    position: relative;
-    z-index: 2;
-    background: linear-gradient(150deg, var(--navy) 0%, #24337f 100%);
-    color: #fff;
-    border-radius: 24px 24px 120px 24px;
-    padding: 2rem;
-    box-shadow: 0 24px 50px rgba(20, 34, 107, 0.25);
-}
-.hero-panel h5 { color: #fff; }
-.hero-panel .list-unstyled li {
-    padding: 0.4rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-}
-.hero-badge {
-    position: absolute;
-    top: -18px;
-    right: -10px;
-    z-index: 3;
-    background: var(--mint);
-    color: var(--navy);
-    font-weight: 700;
-    font-size: 0.8rem;
-    border-radius: 50%;
-    width: 78px;
-    height: 78px;
+/* inline "type your email + Sign Up" capture from the reference */
+.hero-capture {
     display: flex;
     align-items: center;
-    text-align: center;
-    justify-content: center;
-    padding: 0.5rem;
-    box-shadow: 0 8px 18px rgba(20, 34, 107, 0.18);
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(13, 59, 82, 0.08);
+    padding: 0.35rem 0.35rem 0.35rem 0.9rem;
+    max-width: 26rem;
 }
-/* soft mint blob behind the panel */
-.hero-art::before {
+.hero-capture input {
+    border: 0;
+    outline: none;
+    flex: 1;
+    font-size: 0.95rem;
+    padding: 0.5rem 0.4rem;
+    color: var(--ink);
+}
+.hero-checks {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    color: var(--body);
+}
+.hero-checks span::before {
+    content: "\2713";
+    color: var(--teal);
+    font-weight: 700;
+    margin-right: 0.4rem;
+}
+
+/* right-hand visual: soft panel + floating info cards */
+.hero-visual {
+    position: relative;
+    min-height: 360px;
+}
+.hero-panel {
+    position: absolute;
+    inset: 0;
+    border-radius: 180px 180px 24px 24px;
+    background: linear-gradient(165deg, var(--teal) 0%, #4fd7bb 45%, #cdeee6 100%);
+    overflow: hidden;
+}
+.hero-panel::after {   /* soft light sweep */
     content: "";
     position: absolute;
-    right: -30px;
-    bottom: -30px;
-    width: 220px;
-    height: 220px;
-    background: var(--mint);
-    border-radius: 50%;
-    opacity: 0.5;
-    z-index: 1;
+    inset: 0;
+    background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.45), transparent 55%);
 }
-/* dotted texture, echoing the reference */
-.hero-dots {
+/* Stand-in artwork where the reference design uses photography.
+   To use a real photo instead: drop it in wwwroot/img and give the panel
+   `background-image: url('/img/your-photo.jpg'); background-size: cover;`
+   then delete the <svg class="panel-art"> inside it. */
+.panel-art {
     position: absolute;
-    left: -26px;
-    top: -18px;
-    width: 120px;
-    height: 90px;
-    background-image: radial-gradient(var(--mint) 2px, transparent 2px);
-    background-size: 14px 14px;
-    z-index: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 45%;
+    max-width: 180px;
+    stroke: rgba(255, 255, 255, 0.85);
+    fill: none;
+    stroke-width: 1.4;
+    z-index: 2;
 }
-
-
-/* ---- Tables & badges ---- */
-
-.table > thead th {
-    color: var(--navy);
-    border-bottom: 2px solid var(--line);
-}
-.card {
+.img-placeholder {
+    position: relative;
     border-radius: 14px;
+    overflow: hidden;
 }
+.img-placeholder .panel-art {
+    stroke: rgba(255, 255, 255, 0.95);
+    width: 34%;
+    max-width: 140px;
+}
+
+.float-card {
+    position: absolute;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(13, 59, 82, 0.14);
+    padding: 0.7rem 0.9rem;
+    font-size: 0.82rem;
+    color: var(--ink);
+    z-index: 3;
+}
+.float-card .fc-title { font-weight: 600; display: block; }
+.float-card .fc-sub { color: var(--body); font-size: 0.75rem; }
+.float-shield {
+    top: 12%; left: -18px;
+    width: 46px; height: 46px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+    color: var(--teal);
+}
+.float-clients { bottom: 16%; left: -34px; }
+.float-rating { top: 26%; right: -20px; }
+
+/* the little stacked avatar dots on the clients card */
+.avatars { display: flex; margin-top: 0.35rem; }
+.avatars i {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid #fff; margin-right: -7px; display: inline-block;
+}
+.avatars i:nth-child(1) { background: #f0b27a; }
+.avatars i:nth-child(2) { background: #7fb3d5; }
+.avatars i:nth-child(3) { background: #82c9a1; }
+.avatars i:nth-child(4) { background: var(--teal); }
+
+
+/* ---- Decorative striped arc (teal lines) ---- */
+
+.deco-lines {
+    width: 90px;
+    height: 90px;
+    background: repeating-linear-gradient(90deg, var(--teal) 0 2px, transparent 2px 7px);
+    -webkit-mask-image: radial-gradient(circle at 100% 50%, #000 68%, transparent 69%);
+    mask-image: radial-gradient(circle at 100% 50%, #000 68%, transparent 69%);
+    opacity: 0.55;
+}
+
+
+/* ---- Sections ---- */
+
+.section { padding: 4.5rem 0; }
+.section-title { font-size: clamp(1.8rem, 3vw, 2.4rem); margin-bottom: 0.75rem; }
+.section-sub { color: var(--body); max-width: 34rem; margin: 0 auto; }
+
+/* trust / partner strip */
+.trust-strip {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 1.6rem 0;
+    background: #fff;
+}
+.trust-strip .trust {
+    text-align: center;
+    color: #9aa5b1;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    font-size: 0.95rem;
+}
+
+
+/* ---- Feature cards ("What We Provide") ---- */
+
+.feature-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.75rem 1.5rem;
+    height: 100%;
+    transition: box-shadow .2s, transform .2s;
+}
+.feature-card:hover {
+    box-shadow: 0 18px 40px rgba(13, 59, 82, 0.10);
+    transform: translateY(-3px);
+}
+.tile {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1rem;
+}
+.tile-blue { background: var(--tile-blue); color: #3b82c4; }
+.tile-green { background: var(--tile-green); color: var(--teal); }
+.tile-orange { background: var(--tile-orange); color: #e0932f; }
+.feature-card h5 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+.feature-card p { font-size: 0.9rem; margin-bottom: 0.9rem; }
+.learn-more {
+    font-size: 0.85rem;
+    color: var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 2px;
+}
+.learn-more:hover { color: var(--teal); border-color: var(--teal); }
+
+
+/* ---- Benefit rows (icon + text in bordered list) ---- */
+
+.benefit-row {
+    display: flex;
+    gap: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    background: #fff;
+}
+.benefit-row .tile { width: 38px; height: 38px; border-radius: 10px; margin: 0; flex: none; }
+.benefit-row h6 { margin-bottom: 0.2rem; font-size: 0.95rem; }
+.benefit-row p { font-size: 0.85rem; margin: 0; }
+
+
+/* ---- Achievement stats ---- */
+
+.stat-num {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+}
+.stat-label { font-size: 0.85rem; color: var(--body); margin-top: 0.4rem; }
+
+/* checklist used in "What is IPMS" */
+.check-list { list-style: none; padding: 0; margin: 0; }
+.check-list li { padding: 0.3rem 0; color: var(--ink); font-weight: 500; font-size: 0.95rem; }
+.check-list li::before {
+    content: "\2713";
+    color: var(--teal);
+    font-weight: 700;
+    margin-right: 0.55rem;
+}
+
+
+/* ---- Pricing ---- */
+
+.price-card {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    height: 100%;
+}
+.price-head {
+    background: var(--ink);
+    color: #fff;
+    text-align: center;
+    padding: 0.7rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+.price-card.popular { box-shadow: 0 20px 45px rgba(13, 59, 82, 0.16); transform: translateY(-10px); }
+.price-card.popular .price-head { background: var(--ink-dark); }
+.price-amount {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2.3rem;
+    color: var(--ink);
+    font-weight: 700;
+    text-align: center;
+    padding-top: 1.25rem;
+}
+.price-amount small { font-size: 0.8rem; color: var(--body); font-family: inherit; }
+.price-list { list-style: none; padding: 1rem 1.4rem; margin: 0; }
+.price-list li { font-size: 0.85rem; padding: 0.3rem 0; color: var(--body); }
+.price-list li::before { content: "\2713"; color: var(--teal); margin-right: 0.5rem; font-weight: 700; }
+.popular-badge {
+    background: var(--teal);
+    color: #fff;
+    font-size: 0.7rem;
+    padding: 0.15rem 0.7rem;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+
+/* ---- CTA band ---- */
+
+.cta-band {
+    background: linear-gradient(160deg, #eef6fb 0%, #e6f2f8 100%);
+    padding: 3.5rem 0;
+    text-align: center;
+}
+
+
+/* ==========================================================================
+   INTERNAL APP PAGES - custom components, not stock Bootstrap
+   ========================================================================== */
+
+/* Page header: title + optional action on the right, with a teal rule. */
+.page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+}
+.page-head::after {           /* short teal underline accent */
+    content: "";
+    position: absolute;
+    left: 0; bottom: -1px;
+    width: 54px; height: 3px;
+    background: var(--teal);
+    border-radius: 2px;
+}
+.page-head h2 { margin: 0; font-size: 1.7rem; }
+.page-head .page-sub { color: var(--body); font-size: 0.9rem; margin: 0.25rem 0 0; }
+
+/* Panel that wraps data tables instead of a bare Bootstrap table. */
+.panel {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(13, 59, 82, 0.05);
+    overflow: hidden;
+}
+.panel .table { margin: 0; }
+.panel .table > thead th {
+    background: var(--bg-soft);
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    border-bottom: 1px solid var(--line);
+    padding: 0.85rem 1rem;
+    white-space: nowrap;
+}
+.panel .table > tbody td {
+    color: var(--body);
+    font-size: 0.9rem;
+    vertical-align: middle;
+    padding: 0.85rem 1rem;
+    border-color: var(--line);
+}
+.panel .table > tbody tr:last-child td { border-bottom: 0; }
+.panel .table > tbody tr:hover { background: #fafcfd; }
+/* first column reads as the record's identity */
+.panel .table > tbody td:first-child { color: var(--ink); font-weight: 600; }
+.table-striped > tbody > tr:nth-of-type(odd) > * { background: transparent; }
+
+/* Status pills (replace flat Bootstrap badges) */
+.pill {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 0.28rem 0.7rem;
+    border-radius: 20px;
+    border: 1px solid transparent;
+    text-transform: uppercase;
+}
+.pill-green  { background: var(--teal-soft); color: #1c8a72; border-color: #b9e6da; }
+.pill-amber  { background: #fdf4e3; color: #b8791b; border-color: #f3ddb4; }
+.pill-red    { background: #fdeced; color: #c0392b; border-color: #f5cdd0; }
+.pill-grey   { background: #eef2f5; color: #5b6b78; border-color: #dde5ea; }
+.pill-blue   { background: var(--tile-blue); color: #2f6fae; border-color: #cfe0f6; }
+/* keep old badge markup looking right too */
+.badge.bg-secondary { background: #eef2f5 !important; color: #5b6b78 !important; font-weight: 600; border-radius: 20px; padding: 0.35rem 0.7rem; }
+.badge.bg-success { background: var(--teal-soft) !important; color: #1c8a72 !important; font-weight: 600; border-radius: 20px; padding: 0.35rem 0.7rem; }
+.badge.bg-danger { background: #fdeced !important; color: #c0392b !important; font-weight: 600; border-radius: 20px; padding: 0.35rem 0.7rem; }
+.badge.bg-warning { background: #fdf4e3 !important; color: #b8791b !important; font-weight: 600; border-radius: 20px; padding: 0.35rem 0.7rem; }
+.badge.bg-info { background: var(--tile-blue) !important; color: #2f6fae !important; font-weight: 600; border-radius: 20px; padding: 0.35rem 0.7rem; }
+
+/* Empty state instead of a bare grey sentence */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    background: #fff;
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    color: var(--body);
+}
+.empty-state .es-icon {
+    width: 54px; height: 54px;
+    border-radius: 16px;
+    background: var(--teal-soft);
+    color: var(--teal);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 0.9rem;
+}
+.empty-state h5 { margin-bottom: 0.35rem; }
+
+/* Form panel used by the create/edit screens */
+.form-panel {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(13, 59, 82, 0.05);
+    padding: 1.75rem;
+}
+.form-panel .form-label { font-size: 0.85rem; font-weight: 500; color: var(--ink); margin-bottom: 0.25rem; }
+.form-control, .form-select { border-color: #dde5ea; border-radius: 7px; font-size: 0.92rem; }
+
+/* Definition rows inside detail modals */
+.card { border-radius: 12px; border-color: var(--line); }
+.modal-content { border: 0; border-radius: 14px; }
+.modal-header { border-bottom: 1px solid var(--line); background: var(--bg-soft); }
+.modal-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.15rem; }
+.modal-body dt { color: var(--body); font-weight: 500; font-size: 0.85rem; }
+.modal-body dd { color: var(--ink); font-weight: 500; font-size: 0.9rem; }
+
+.alert { border-radius: 10px; border: 1px solid transparent; font-size: 0.92rem; }
+.alert-success { background: var(--teal-soft); border-color: #b9e6da; color: #17705d; }
+.alert-danger { background: #fdeced; border-color: #f5cdd0; color: #a5342a; }
 
 
 /* ---- Auth pages (login / signup) ---- */
 
 .auth-page {
     display: flex;
-    justify-content: center;   /* horizontally centered */
-    align-items: center;       /* vertically centered   */
-    /* Fill exactly the space between the navbar and the footer, so the card
-       centres without pushing the page taller than the viewport (no scroll). */
+    justify-content: center;
+    align-items: center;
     min-height: calc(100vh - 150px);
     padding: 1rem;
+    background: linear-gradient(160deg, #f7fbfd 0%, #eef6fb 100%);
 }
 .auth-card {
     width: 100%;
     max-width: 420px;
     border: 1px solid var(--line);
+    box-shadow: 0 18px 45px rgba(13, 59, 82, 0.08);
 }
-/* Compact spacing so the whole signup form fits on one screen. */
-.auth-card .card-body {
-    padding: 1.1rem 1.5rem;
-}
-.auth-card h3 {
-    margin-bottom: 0.75rem !important;
-}
-.auth-card .form-label {
-    margin-bottom: 0.1rem;
-    font-size: 0.9rem;
-}
-.auth-card .mb-3 {
-    margin-bottom: 0.55rem !important;
+.auth-card .card-body { padding: 1.1rem 1.5rem; }
+.auth-card h3 { margin-bottom: 0.75rem !important; text-align: center; }
+.auth-card .form-label { margin-bottom: 0.1rem; font-size: 0.88rem; color: var(--ink); font-weight: 500; }
+.auth-card .mb-3 { margin-bottom: 0.55rem !important; }
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 0.15rem rgba(46, 196, 166, .18);
 }
 
 
 /* ---- Footer ---- */
 
 .site-footer {
-    background: var(--navy);
-    color: rgba(255, 255, 255, 0.75);
+    background: var(--ink);
+    color: rgba(255, 255, 255, 0.72);
     padding: 1.5rem 0;
-    margin-top: 3rem;
+    font-size: 0.9rem;
 }
 .site-footer a { color: #fff; }

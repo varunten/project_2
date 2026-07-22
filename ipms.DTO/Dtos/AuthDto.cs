@@ -14,7 +14,7 @@ public class AuthSignupDto
 
     [Required(AllowEmptyStrings = false, ErrorMessage = "Email is required.")]
     [RegularExpression(
-        @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)?\.[a-zA-Z]{2,}$",
+        @"^[a-zA-Z0-9._%+-]+@(?!.*\.(?:com|net|org|edu|gov|mil|info|biz|io)\.)[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$",
         ErrorMessage = "Enter a valid email address (e.g. name@example.com).")]
     public required string Email {get; set;}
 
@@ -55,7 +55,7 @@ public class CreateStaffDto
 
     [Required(AllowEmptyStrings = false, ErrorMessage = "Email is required.")]
     [RegularExpression(
-        @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)?\.[a-zA-Z]{2,}$",
+        @"^[a-zA-Z0-9._%+-]+@(?!.*\.(?:com|net|org|edu|gov|mil|info|biz|io)\.)[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$",
         ErrorMessage = "Enter a valid email address (e.g. name@example.com).")]
     public required string Email {get; set;}
 

@@ -14,15 +14,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - IPMS</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @* Serif headings + sans body, matching the reference design. Falls back to
+       Georgia / system fonts if there is no internet. *@
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-ipms sticky-top mb-4">
+    <nav class="navbar navbar-expand-lg navbar-ipms sticky-top">
         <div class="container">
             <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
-                    <path d="M4 10 L12 4 L12 15 L4 21 Z" fill="#14226b" />
-                    <path d="M19 11 L28 5 L28 16 L19 22 Z" fill="#33b98f" />
+                <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
+                    <path d="M16 3 4 8v8c0 7 5 11 12 13 7-2 12-6 12-13V8z" fill="#2ec4a6" />
+                    <path d="M16 3 4 8v8c0 7 5 11 12 13z" fill="#0d3b52" />
                 </svg>
                 IPMS
             </a>
@@ -33,7 +38,12 @@
             </button>
 
             <div class="collapse navbar-collapse" id="nav">
-                <ul class="navbar-nav me-auto">
+                @* Centre links, like the reference nav. *@
+                <ul class="navbar-nav mx-lg-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+
                     @if (isLoggedIn)
                     {
                         <li class="nav-item">
@@ -52,7 +62,7 @@
                                 <a class="nav-link" asp-controller="Claims" asp-action="Index">My Claims</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Customer" asp-action="Index">My Profile</a>
+                                <a class="nav-link" asp-controller="Customer" asp-action="Index">Profile</a>
                             </li>
                         }
 
@@ -93,17 +103,17 @@
                         </li>
                         <li class="nav-item">
                             <form asp-controller="Account" asp-action="Logout" method="post">
-                                <button type="submit" class="btn btn-sm btn-outline-primary">Sign out</button>
+                                <button type="submit" class="btn btn-sm btn-ink">Sign out</button>
                             </form>
                         </li>
                     }
                     else
                     {
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Account" asp-action="Login">Sign in</a>
+                            <a class="btn btn-sm btn-ink me-2" asp-controller="Account" asp-action="Login">Sign in</a>
                         </li>
-                        <li class="nav-item ms-lg-2">
-                            <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Signup">Sign Up</a>
+                        <li class="nav-item">
+                            <a class="btn btn-sm btn-teal" asp-controller="Account" asp-action="Signup">Sign Up</a>
                         </li>
                     }
                 </ul>
@@ -111,23 +121,41 @@
         </div>
     </nav>
 
-    <main role="main" class="container">
-        @if (TempData["Success"] != null)
+    <main role="main">
+        @* Landing page renders full-width; every other page sits in a container. *@
+        @if (ViewData["FullWidth"] is true)
         {
-            <div class="alert alert-success">@TempData["Success"]</div>
+            @if (TempData["Success"] != null)
+            {
+                <div class="container pt-3"><div class="alert alert-success">@TempData["Success"]</div></div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="container pt-3"><div class="alert alert-danger">@TempData["Error"]</div></div>
+            }
+            @RenderBody()
         }
-        @if (TempData["Error"] != null)
+        else
         {
-            <div class="alert alert-danger">@TempData["Error"]</div>
-        }
+            <div class="container py-4">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success">@TempData["Success"]</div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger">@TempData["Error"]</div>
+                }
 
-        @RenderBody()
+                @RenderBody()
+            </div>
+        }
     </main>
 
     <footer class="site-footer">
         <div class="container d-flex justify-content-between flex-wrap">
             <span>&copy; @DateTime.UtcNow.Year IPMS &mdash; Insurance Policy Management System</span>
-            <span>Reduce risk and keep life good.</span>
+            <span>Life more relaxed with smart insurance.</span>
         </div>
     </footer>
 

@@ -56,6 +56,8 @@ public class ProductsController : BaseController
         IActionResult? denied = RequireAgent();
         if (denied is not null) return denied;
 
+        if (!ModelState.IsValid) return View(payload);
+
         try
         {
             ProductDto product = await _api.CreateProductAsync(payload);
