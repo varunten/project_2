@@ -41,6 +41,15 @@ public class ClaimController : ControllerBase
     }
 
 
+    [HttpGet("my/{claim_id}")]
+    [Authorize(Roles = Roles.Customer)]
+    public async Task<ActionResult<ApiResponse<ClaimDto>>> GetMyClaimById(Guid claim_id)
+    {
+        ClaimDto result = await _service.GetMyClaimByIdAsync(GetUserId(), claim_id);
+        return Ok(ApiResponse.Ok(result, "Claim retrieved."));
+    }
+
+
     // Staff review the claim queue.
     [HttpGet]
     [Authorize(Roles = Roles.Staff)]

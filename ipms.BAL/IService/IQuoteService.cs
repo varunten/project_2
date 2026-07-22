@@ -14,6 +14,9 @@ public interface IQuoteService
 
     Task<QuoteDto> AcceptQuoteAsync(Guid userId, Guid quoteId);
 
+    // The customer withdraws their own quote before it becomes a policy.
+    Task<QuoteDto> CancelQuoteAsync(Guid userId, Guid quoteId);
+
     // Underwriter actions.
     // Quotes accepted by a customer and waiting for a decision.
     Task<QuotesDto> GetPendingQuotesAsync();

@@ -11,6 +11,9 @@ public interface IClaimService
     // The signed-in customer's own claims (across all their policies).
     Task<ClaimsDto> GetMyClaimsAsync(Guid userId);
 
+    // A single claim of the signed-in customer's own (ownership checked).
+    Task<ClaimDto> GetMyClaimByIdAsync(Guid userId, Guid claimId);
+
     // Every claim - the staff review queue.
     Task<ClaimsDto> GetClaimsAsync();
 

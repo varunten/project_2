@@ -31,6 +31,25 @@ public class CustomerController : ControllerBase
     }
 
 
+    // The signed-in customer views their own profile.
+    [HttpGet("me")]
+    [Authorize(Roles = Roles.Customer)]
+    public async Task<ActionResult<ApiResponse<CustomerDto>>> GetMyProfile()
+    {
+        CustomerDto result = await _service.GetMyProfileAsync(GetUserId());
+        return Ok(ApiResponse.Ok(result, "Profile retrieved."));
+    }
+
+
+    [HttpPatch("me")]
+    [Authorize(Roles = Roles.Customer)]
+    public async Task<ActionResult<ApiResponse<CustomerDto>>> UpdateMyProfile(UpdateCustomerDto payload)
+    {
+        CustomerDto result = await _service.UpdateMyProfileAsync(GetUserId(), payload);
+        return Ok(ApiResponse.Ok(result, "Profile updated."));
+    }
+
+
     // Staff can list and inspect customer records.
     [HttpGet]
     [Authorize(Roles = Roles.Staff)]

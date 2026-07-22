@@ -9,7 +9,8 @@ public interface IProductService
 
     Task<ProductDto> GetProductByIdAsync(Guid id);
 
-    Task<ProductDto> CreateProductAsync(CreateProductDto payload);
+    // agentId = the insurance agent creating the product (recorded on it).
+    Task<ProductDto> CreateProductAsync(Guid agentId, CreateProductDto payload);
 
     Task<ProductDto> UpdateProductAsync(Guid id, UpdateProductDto payload);
 

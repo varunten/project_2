@@ -106,37 +106,4 @@ public class AdminController : BaseController
             return View(payload);
         }
     }
-
-
-    // ---- Products ----
-
-    [HttpGet]
-    public IActionResult CreateProduct()
-    {
-        IActionResult? denied = RequireAdmin();
-        if (denied is not null) return denied;
-
-        return View();
-    }
-
-
-    [HttpPost]
-    public async Task<IActionResult> CreateProduct(CreateProductDto payload)
-    {
-        IActionResult? denied = RequireAdmin();
-        if (denied is not null) return denied;
-
-        try
-        {
-            ProductDto product = await _api.CreateProductAsync(payload);
-
-            TempData["Success"] = $"Product '{product.Name}' created.";
-            return RedirectToAction("Index", "Products");
-        }
-        catch (ApiException ex)
-        {
-            AddApiErrors(ex);
-            return View(payload);
-        }
-    }
 }

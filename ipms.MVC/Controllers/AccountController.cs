@@ -25,6 +25,11 @@ public class AccountController : BaseController
     [HttpPost]
     public async Task<IActionResult> Signup(AuthSignupDto payload)
     {
+        // Show field errors (from the DTO's data annotations) straight away,
+        // under each box, without a round trip to the API.
+        if (!ModelState.IsValid)
+            return View(payload);
+
         try
         {
             await _api.SignupAsync(payload);
@@ -50,6 +55,9 @@ public class AccountController : BaseController
     [HttpPost]
     public async Task<IActionResult> Login(AuthLoginDto payload)
     {
+        if (!ModelState.IsValid)
+            return View(payload);
+
         try
         {
             TokenDto token = await _api.LoginAsync(payload);

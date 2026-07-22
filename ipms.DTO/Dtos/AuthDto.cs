@@ -5,6 +5,7 @@ namespace IPMS.DTO.Dtos;
 public class AuthSignupDto
 {
     [Required(AllowEmptyStrings = false, ErrorMessage = "First name is required.")]
+    [StringLength(50, MinimumLength = 2, ErrorMessage = "First name must be between 2 and 50 characters.")]
     public required string FirstName {get; set;}
 
     public string? MiddleName {get; set;}
@@ -12,11 +13,13 @@ public class AuthSignupDto
     public string? LastName {get; set; }
 
     [Required(AllowEmptyStrings = false, ErrorMessage = "Email is required.")]
-    [EmailAddress(ErrorMessage = "Email is not a valid email address.")]
+    [RegularExpression(
+        @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)?\.[a-zA-Z]{2,}$",
+        ErrorMessage = "Enter a valid email address (e.g. name@example.com).")]
     public required string Email {get; set;}
 
     [Required(AllowEmptyStrings = false, ErrorMessage = "Phone number is required.")]
-    [RegularExpression(@"^\+?[0-9]{7,15}$", ErrorMessage = "Phone number must be 7-15 digits, optionally starting with '+'.")]
+    [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be exactly 10 digits (US).")]
     public required string PhoneNumber {get; set;}
 
     [Required(AllowEmptyStrings = false, ErrorMessage = "Password is required.")]
@@ -43,6 +46,7 @@ public class AuthLoginDto
 public class CreateStaffDto
 {
     [Required(AllowEmptyStrings = false, ErrorMessage = "First name is required.")]
+    [StringLength(50, MinimumLength = 2, ErrorMessage = "First name must be between 2 and 50 characters.")]
     public required string FirstName {get; set;}
 
     public string? MiddleName {get; set;}
@@ -50,11 +54,13 @@ public class CreateStaffDto
     public string? LastName {get; set;}
 
     [Required(AllowEmptyStrings = false, ErrorMessage = "Email is required.")]
-    [EmailAddress(ErrorMessage = "Email is not a valid email address.")]
+    [RegularExpression(
+        @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)?\.[a-zA-Z]{2,}$",
+        ErrorMessage = "Enter a valid email address (e.g. name@example.com).")]
     public required string Email {get; set;}
 
     [Required(AllowEmptyStrings = false, ErrorMessage = "Phone number is required.")]
-    [RegularExpression(@"^\+?[0-9]{7,15}$", ErrorMessage = "Phone number must be 7-15 digits, optionally starting with '+'.")]
+    [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be exactly 10 digits (US).")]
     public required string PhoneNumber {get; set;}
 
     [Required(AllowEmptyStrings = false, ErrorMessage = "Password is required.")]

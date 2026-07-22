@@ -80,6 +80,24 @@ public class ClaimService : IClaimService
     }
 
 
+    public async Task<ClaimDto> GetMyClaimByIdAsync(Guid userId, Guid claimId)
+    {
+        Customer customer = await _customerRepository.GetActiveByUserIdAsync(userId)
+            ?? throw new BadRequestException("You must create a customer profile first.");
+
+        Claim claim = await _repository.GetByIdAsync(claimId)
+            ?? throw new NotFoundException("Claim not found.");
+
+        Policy? policy = await _policyRepository.GetByIdAsync(claim.PolicyId);
+
+        // Hide the existence of claims that aren't the customer's own.
+        if (policy is null || policy.CustomerId != customer.Id)
+            throw new NotFoundException("Claim not found.");
+
+        return MapToDto(claim);
+    }
+
+
     public async Task<ClaimsDto> GetClaimsAsync()
     {
         List<Claim> claims = await _repository.GetAllAsync();

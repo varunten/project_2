@@ -59,6 +59,15 @@ public class QuoteController : ControllerBase
     }
 
 
+    [HttpPatch("{quote_id}/cancel")]
+    [Authorize(Roles = Roles.Customer)]
+    public async Task<ActionResult<ApiResponse<QuoteDto>>> CancelQuote(Guid quote_id)
+    {
+        QuoteDto result = await _service.CancelQuoteAsync(GetUserId(), quote_id);
+        return Ok(ApiResponse.Ok(result, "Quote cancelled."));
+    }
+
+
     // ---- Underwriter actions ----
 
     // The underwriter's review queue. Must come before the "{quote_id}" route

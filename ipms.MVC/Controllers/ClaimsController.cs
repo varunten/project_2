@@ -76,6 +76,54 @@ public class ClaimsController : BaseController
     }
 
 
+    // Loaded into the "view claim" modal. Shows the claim + its documents.
+    [HttpGet]
+    public async Task<IActionResult> Details(Guid id)
+    {
+        if (!IsLoggedIn)
+            return Content("Your session has expired. Please sign in again.");
+
+        try
+        {
+            // GetMyClaim verifies the claim belongs to this customer; only then
+            // do we load its documents.
+            ClaimDto claim = await _api.GetMyClaimAsync(id);
+            List<ClaimDocumentDto> documents = await _api.GetClaimDocumentsAsync(id);
+
+            ViewBag.Documents = documents;
+            return PartialView("_ClaimDetails", claim);
+        }
+        catch (ApiException ex)
+        {
+            return Content(ex.Message);
+        }
+    }
+
+
+    // Customer adds a document (metadata only - no file upload) to their claim.
+    [HttpPost]
+    public async Task<IActionResult> AddDocument(Guid claimId, UploadClaimDocumentDto payload)
+    {
+        if (!IsLoggedIn)
+            return RedirectToAction("Login", "Account");
+
+        try
+        {
+            // Confirm ownership before attaching anything to the claim.
+            await _api.GetMyClaimAsync(claimId);
+            await _api.UploadClaimDocumentAsync(claimId, payload);
+
+            TempData["Success"] = "Document added to the claim.";
+        }
+        catch (ApiException ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+
     // ---- Underwriter ----
 
     [HttpGet]

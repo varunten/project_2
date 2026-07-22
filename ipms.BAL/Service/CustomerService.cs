@@ -59,6 +59,24 @@ public class CustomerService : ICustomerService
     }
 
 
+    public async Task<CustomerDto> GetMyProfileAsync(Guid userId)
+    {
+        Customer customer = await _repository.GetActiveByUserIdAsync(userId)
+            ?? throw new NotFoundException("You have not created a customer profile yet.");
+
+        return await GetCustomerByIdAsync(customer.Id);
+    }
+
+
+    public async Task<CustomerDto> UpdateMyProfileAsync(Guid userId, UpdateCustomerDto payload)
+    {
+        Customer customer = await _repository.GetActiveByUserIdAsync(userId)
+            ?? throw new NotFoundException("You have not created a customer profile yet.");
+
+        return await UpdateCustomerAsync(customer.Id, payload);
+    }
+
+
     public async Task<CustomersDto> GetCustomersAsync()
     {
         List<Customer> customers = await _repository.GetAllActiveAsync();

@@ -145,6 +145,25 @@ public class QuoteService : IQuoteService
     }
 
 
+    public async Task<QuoteDto> CancelQuoteAsync(Guid userId, Guid quoteId)
+    {
+        Customer customer = await GetCustomerOrThrow(userId);
+
+        Quote quote = await _quoteRepository.GetByIdForCustomerAsync(quoteId, customer.Id)
+            ?? throw new NotFoundException("Quote not found.");
+
+        // Only a quote that hasn't been decided yet can be withdrawn.
+        if (quote.Status is not (QuoteStatus.Requested or QuoteStatus.AcceptedByCustomer))
+            throw new ConflictException("This quote can no longer be cancelled.");
+
+        quote.Status = QuoteStatus.Rejected;
+        await _quoteRepository.SaveChangesAsync();
+
+        string productName = await GetProductName(quote.ProductId);
+        return MapToDto(quote, productName);
+    }
+
+
     public async Task<PolicyDto> ApproveQuoteAsync(Guid underwriterId, Guid quoteId)
     {
         Quote quote = await _quoteRepository.GetByIdAsync(quoteId)
@@ -173,7 +192,8 @@ public class QuoteService : IQuoteService
             ProductId = quote.ProductId,
             CustomerId = quote.CustomerId,
             QuoteId = quote.Id,
-            InsuranceAgentId = null,
+            // The customer bought through the agent who created the product.
+            InsuranceAgentId = product.InsuranceAgentId,
             UnderWriterId = underwriterId,
             CoverageAmount = quote.CoverageAmount,
             PremiumAmount = quote.PremiumAmount,

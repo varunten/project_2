@@ -72,6 +72,13 @@ else
                                 <button type="submit" class="btn btn-sm btn-accent">Renew</button>
                             </form>
                         }
+                        @if (policy.Status == PolicyStatus.Active)
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-danger cancel-policy-btn"
+                                    data-policy-id="@policy.Id" data-policy-number="@policy.PolicyNumber">
+                                Cancel
+                            </button>
+                        }
                     </td>
                 </tr>
             }
@@ -86,6 +93,34 @@ else
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" id="policyModalBody"></div>
+            </div>
+        </div>
+    </div>
+
+    @* First confirmation: this modal asks for a reason. Second confirmation: a
+       JavaScript confirm() when the form is submitted. *@
+    <div class="modal fade" id="cancelModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form asp-action="Cancel" method="post"
+                      onsubmit="return confirm('This permanently cancels the policy and cannot be undone. Cancel it?');">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-danger">Cancel policy</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>You are about to cancel policy <strong id="cancelPolicyNumber"></strong>.</p>
+                        <input type="hidden" name="id" id="cancelPolicyId" />
+                        <div class="mb-2">
+                            <label class="form-label">Reason for cancelling</label>
+                            <textarea name="cancellationReason" class="form-control" rows="2" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep policy</button>
+                        <button type="submit" class="btn btn-danger">Cancel policy</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -108,6 +143,15 @@ else
                     .catch(function () {
                         body.innerHTML = '<p class="text-danger">Could not load this policy.</p>';
                     });
+            });
+        });
+
+        // Cancel button -> fill and open the cancel modal (first confirmation).
+        document.querySelectorAll('.cancel-policy-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.getElementById('cancelPolicyId').value = this.dataset.policyId;
+                document.getElementById('cancelPolicyNumber').textContent = this.dataset.policyNumber;
+                new bootstrap.Modal(document.getElementById('cancelModal')).show();
             });
         });
     </script>

@@ -50,6 +50,12 @@ public class IpmsApiClient
     public Task<CustomerDto> CreateCustomerAsync(CreateCustomerDto payload) =>
         SendAsync<CustomerDto>(HttpMethod.Post, "api/customer", payload);
 
+    public Task<CustomerDto> GetMyProfileAsync() =>
+        SendAsync<CustomerDto>(HttpMethod.Get, "api/customer/me");
+
+    public Task<CustomerDto> UpdateMyProfileAsync(UpdateCustomerDto payload) =>
+        SendAsync<CustomerDto>(HttpMethod.Patch, "api/customer/me", payload);
+
 
     // ---- Products ----
 
@@ -68,8 +74,14 @@ public class IpmsApiClient
     public Task<QuoteDto> CreateQuoteAsync(CreateQuoteDto payload) =>
         SendAsync<QuoteDto>(HttpMethod.Post, "api/quote", payload);
 
+    public Task<QuoteDto> GetQuoteAsync(Guid quoteId) =>
+        SendAsync<QuoteDto>(HttpMethod.Get, $"api/quote/{quoteId}");
+
     public Task<QuoteDto> AcceptQuoteAsync(Guid quoteId) =>
         SendAsync<QuoteDto>(HttpMethod.Patch, $"api/quote/{quoteId}/accept");
+
+    public Task<QuoteDto> CancelQuoteAsync(Guid quoteId) =>
+        SendAsync<QuoteDto>(HttpMethod.Patch, $"api/quote/{quoteId}/cancel");
 
 
     // ---- Underwriter ----
@@ -96,6 +108,9 @@ public class IpmsApiClient
     public Task<PolicyDto> RenewPolicyAsync(Guid policyId) =>
         SendAsync<PolicyDto>(HttpMethod.Post, $"api/policy/{policyId}/renew");
 
+    public Task<PolicyDto> CancelPolicyAsync(Guid policyId, CancelPolicyDto payload) =>
+        SendAsync<PolicyDto>(HttpMethod.Patch, $"api/policy/{policyId}/cancel", payload);
+
 
     // ---- Premium payments ----
 
@@ -111,8 +126,17 @@ public class IpmsApiClient
     public Task<ClaimsDto> GetMyClaimsAsync() =>
         SendAsync<ClaimsDto>(HttpMethod.Get, "api/claim/my");
 
+    public Task<ClaimDto> GetMyClaimAsync(Guid claimId) =>
+        SendAsync<ClaimDto>(HttpMethod.Get, $"api/claim/my/{claimId}");
+
     public Task<ClaimDto> CreateClaimAsync(CreateClaimDto payload) =>
         SendAsync<ClaimDto>(HttpMethod.Post, "api/claim", payload);
+
+    public Task<List<ClaimDocumentDto>> GetClaimDocumentsAsync(Guid claimId) =>
+        SendAsync<List<ClaimDocumentDto>>(HttpMethod.Get, $"api/claim/{claimId}/documents");
+
+    public Task<ClaimDocumentDto> UploadClaimDocumentAsync(Guid claimId, UploadClaimDocumentDto payload) =>
+        SendAsync<ClaimDocumentDto>(HttpMethod.Post, $"api/claim/{claimId}/documents", payload);
 
     // Staff / underwriter
     public Task<ClaimsDto> GetAllClaimsAsync() =>

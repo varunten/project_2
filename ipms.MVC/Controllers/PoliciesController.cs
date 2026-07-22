@@ -38,6 +38,30 @@ public class PoliciesController : BaseController
 
 
     [HttpPost]
+    public async Task<IActionResult> Cancel(Guid id, string cancellationReason)
+    {
+        if (!IsLoggedIn)
+            return RedirectToAction("Login", "Account");
+
+        try
+        {
+            PolicyDto cancelled = await _api.CancelPolicyAsync(id, new CancelPolicyDto
+            {
+                CancellationReason = cancellationReason
+            });
+
+            TempData["Success"] = $"Policy {cancelled.PolicyNumber} cancelled.";
+        }
+        catch (ApiException ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+
+    [HttpPost]
     public async Task<IActionResult> Renew(Guid id)
     {
         if (!IsLoggedIn)

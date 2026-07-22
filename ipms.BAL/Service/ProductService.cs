@@ -40,7 +40,7 @@ public class ProductService : IProductService
     }
 
 
-    public async Task<ProductDto> CreateProductAsync(CreateProductDto payload)
+    public async Task<ProductDto> CreateProductAsync(Guid agentId, CreateProductDto payload)
     {
         if (payload.MinAge > payload.MaxAge)
             throw new ValidationException("MinAge cannot be greater than MaxAge.");
@@ -50,6 +50,7 @@ public class ProductService : IProductService
 
         Product product = new()
         {
+            InsuranceAgentId = agentId,
             Name = payload.Name,
             Type = payload.Type,
             CoverageAmount = payload.CoverageAmount,

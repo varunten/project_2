@@ -28,9 +28,10 @@ public abstract class BaseController : Controller
         {
             foreach ((string field, string[] messages) in ex.Errors)
             {
+                string key = NormalizeFieldKey(field);
                 foreach (string message in messages)
                 {
-                    ModelState.AddModelError(field, message);
+                    ModelState.AddModelError(key, message);
                 }
             }
         }
@@ -38,5 +39,18 @@ public abstract class BaseController : Controller
         {
             ModelState.AddModelError(string.Empty, ex.Message);
         }
+    }
+
+
+    // The API may report a field as "Email", "email" or "$.email"; the form's
+    // <span asp-validation-for="Email"> expects "Email". Line them up.
+    private static string NormalizeFieldKey(string field)
+    {
+        string key = field.StartsWith("$.") ? field[2..] : field;
+
+        if (key.Length > 0 && char.IsLower(key[0]))
+            key = char.ToUpper(key[0]) + key[1..];
+
+        return key;
     }
 }

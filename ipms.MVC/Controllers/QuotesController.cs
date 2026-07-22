@@ -115,4 +115,43 @@ public class QuotesController : BaseController
 
         return RedirectToAction(nameof(Index));
     }
+
+
+    [HttpPost]
+    public async Task<IActionResult> Cancel(Guid id)
+    {
+        if (!IsLoggedIn)
+            return RedirectToAction("Login", "Account");
+
+        try
+        {
+            await _api.CancelQuoteAsync(id);
+            TempData["Success"] = "Quote cancelled.";
+        }
+        catch (ApiException ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+
+    // Loaded into the "view quote" modal on the list page.
+    [HttpGet]
+    public async Task<IActionResult> Details(Guid id)
+    {
+        if (!IsLoggedIn)
+            return Content("Your session has expired. Please sign in again.");
+
+        try
+        {
+            QuoteDto quote = await _api.GetQuoteAsync(id);
+            return PartialView("_QuoteDetails", quote);
+        }
+        catch (ApiException ex)
+        {
+            return Content(ex.Message);
+        }
+    }
 }

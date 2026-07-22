@@ -1,0 +1,69 @@
+@model ClaimDto
+@{
+    var documents = ViewBag.Documents as List<ClaimDocumentDto> ?? new List<ClaimDocumentDto>();
+}
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <h4 class="mb-0">@Model.ClaimNumber</h4>
+    <span class="badge bg-secondary fs-6">@Model.Status</span>
+</div>
+
+<dl class="row mb-0">
+    <dt class="col-5">Incident date</dt>
+    <dd class="col-7">@Model.IncidentDate.ToString("yyyy-MM-dd")</dd>
+
+    <dt class="col-5">Claim amount</dt>
+    <dd class="col-7">@Model.ClaimAmount.ToString("N2")</dd>
+
+    <dt class="col-5">Approved amount</dt>
+    <dd class="col-7">@(Model.ApprovedAmount?.ToString("N2") ?? "-")</dd>
+
+    <dt class="col-5">Settled on</dt>
+    <dd class="col-7">@(Model.SettledDate?.ToString("yyyy-MM-dd") ?? "-")</dd>
+
+    <dt class="col-5">Reason</dt>
+    <dd class="col-7">@Model.Reason</dd>
+
+    <dt class="col-5">Underwriter notes</dt>
+    <dd class="col-7">@(string.IsNullOrEmpty(Model.Notes) ? "-" : Model.Notes)</dd>
+</dl>
+
+<hr />
+
+<h6>Documents</h6>
+@if (documents.Count == 0)
+{
+    <p class="text-muted small">No documents added yet.</p>
+}
+else
+{
+    <ul class="list-group mb-3">
+        @foreach (var doc in documents)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>
+                    <strong>@doc.FileName</strong>
+                    <small class="text-muted">(@doc.FileType)</small>
+                </span>
+                <a href="@doc.FileURL" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">Open</a>
+            </li>
+        }
+    </ul>
+}
+
+@* Metadata only for now - the customer records a document reference, no upload. *@
+<form asp-controller="Claims" asp-action="AddDocument" method="post" class="row g-2">
+    <input type="hidden" name="claimId" value="@Model.Id" />
+    <div class="col-md-4">
+        <input name="FileName" class="form-control form-control-sm" placeholder="File name" required />
+    </div>
+    <div class="col-md-3">
+        <input name="FileType" class="form-control form-control-sm" placeholder="Type (e.g. pdf)" required />
+    </div>
+    <div class="col-md-3">
+        <input name="FileURL" type="url" class="form-control form-control-sm" placeholder="https://..." required />
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-sm btn-primary w-100">Add</button>
+    </div>
+</form>

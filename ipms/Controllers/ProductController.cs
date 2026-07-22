@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using IPMS.BAL.IService;
 using IPMS.DTO;
 using IPMS.DTO.Dtos;
@@ -37,18 +38,18 @@ public class ProductController : ControllerBase
     }
 
 
-    // Only admins manage the product catalogue.
+    // Insurance agents own the product catalogue.
     [HttpPost]
-    [Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.InsuranceAgent)]
     public async Task<ActionResult<ApiResponse<ProductDto>>> CreateProduct(CreateProductDto payload)
     {
-        ProductDto result = await _service.CreateProductAsync(payload);
+        ProductDto result = await _service.CreateProductAsync(GetUserId(), payload);
         return Ok(ApiResponse.Ok(result, "Product created."));
     }
 
 
     [HttpPatch("{product_id}")]
-    [Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.InsuranceAgent)]
     public async Task<ActionResult<ApiResponse<ProductDto>>> UpdateProductById(
         Guid product_id,
         UpdateProductDto payload)
@@ -59,10 +60,16 @@ public class ProductController : ControllerBase
 
 
     [HttpDelete("{product_id}")]
-    [Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.InsuranceAgent)]
     public async Task<ActionResult<ApiResponse<string>>> DeleteProductById(Guid product_id)
     {
         await _service.DeleteProductAsync(product_id);
         return Ok(ApiResponse.Ok(string.Empty, "Product deleted."));
+    }
+
+
+    private Guid GetUserId()
+    {
+        return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     }
 }
