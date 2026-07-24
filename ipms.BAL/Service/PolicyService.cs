@@ -14,17 +14,23 @@ public class PolicyService : IPolicyService
     private readonly ICustomerRepository _customerRepository;
     private readonly IProductRepository _productRepository;
     private readonly IPremiumPaymentRepository _premiumPaymentRepository;
+    private readonly IAuthRepository _authRepository;
+    private readonly IQuoteRepository _quoteRepository;
 
     public PolicyService(
         IPolicyRepository policyRepository,
         ICustomerRepository customerRepository,
         IProductRepository productRepository,
-        IPremiumPaymentRepository premiumPaymentRepository)
+        IPremiumPaymentRepository premiumPaymentRepository,
+        IAuthRepository authRepository,
+        IQuoteRepository quoteRepository)
     {
         _policyRepository = policyRepository;
         _customerRepository = customerRepository;
         _productRepository = productRepository;
         _premiumPaymentRepository = premiumPaymentRepository;
+        _authRepository = authRepository;
+        _quoteRepository = quoteRepository;
     }
 
 
@@ -61,7 +67,9 @@ public class PolicyService : IPolicyService
 
         string productName = await GetProductName(policy.ProductId);
 
-        return PolicyMapper.ToDto(policy, productName);
+        PolicyDto dto = PolicyMapper.ToDto(policy, productName);
+        await EnrichForDisplayAsync(dto, policy);
+        return dto;
     }
 
 
@@ -171,6 +179,47 @@ public class PolicyService : IPolicyService
 
         if (anyClosed)
             await _policyRepository.SaveChangesAsync();
+    }
+
+
+    // Resolve the ids on a policy into human-friendly labels for the details
+    // view, so the UI never has to show a raw GUID: the underwriter and agent
+    // become a name + email, and the linked quote / previous policy become
+    // their reference numbers.
+    private async Task EnrichForDisplayAsync(PolicyDto dto, Policy policy)
+    {
+        User? underwriter = await _authRepository.GetUserByIdAsync(policy.UnderWriterId);
+        if (underwriter is not null)
+        {
+            dto.UnderwriterName = FullName(underwriter);
+            dto.UnderwriterEmail = underwriter.Email;
+        }
+
+        if (policy.InsuranceAgentId is Guid agentId)
+        {
+            User? agent = await _authRepository.GetUserByIdAsync(agentId);
+            if (agent is not null)
+            {
+                dto.InsuranceAgentName = FullName(agent);
+                dto.InsuranceAgentEmail = agent.Email;
+            }
+        }
+
+        Quote? quote = await _quoteRepository.GetByIdAsync(policy.QuoteId);
+        dto.QuoteNumber = quote?.QuoteNumber;
+
+        if (policy.PreviousPolicyId is Guid previousId)
+        {
+            Policy? previous = await _policyRepository.GetByIdAsync(previousId);
+            dto.PreviousPolicyNumber = previous?.PolicyNumber;
+        }
+    }
+
+
+    private static string FullName(User user)
+    {
+        string[] parts = [user.FirstName, user.LastName ?? ""];
+        return string.Join(" ", parts.Where(p => !string.IsNullOrWhiteSpace(p)));
     }
 
 

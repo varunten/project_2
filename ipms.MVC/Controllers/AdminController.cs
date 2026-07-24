@@ -55,26 +55,6 @@ public class AdminController : BaseController
     }
 
 
-    [HttpPost]
-    public async Task<IActionResult> AssignRole(Guid id, string role)
-    {
-        IActionResult? denied = RequireAdmin();
-        if (denied is not null) return denied;
-
-        try
-        {
-            List<string> roles = await _api.AssignRoleAsync(id, new AssignRoleDto { Role = role });
-            TempData["Success"] = $"Role added. User now has: {string.Join(", ", roles)}.";
-        }
-        catch (ApiException ex)
-        {
-            TempData["Error"] = ex.Message;
-        }
-
-        return RedirectToAction(nameof(Users));
-    }
-
-
     // ---- Staff ----
 
     [HttpGet]

@@ -48,10 +48,39 @@ public class CreateProductDto
 }
 
 
+// How the catalogue should be filtered, sorted and paged. Bound straight from
+// the query string on GET /api/product, so every field is optional and has a
+// sensible default applied in the service.
+public class ProductQueryDto
+{
+    // Case-insensitive match on the product name.
+    public string? Search {get; set;}
+
+    // Restrict to a single product type.
+    public ProductType? Type {get; set;}
+
+    // One of: name | premium | coverage | created. Defaults to name.
+    public string? SortBy {get; set;}
+
+    // asc | desc. Defaults to asc.
+    public string? SortDir {get; set;}
+
+    // 1-based page number and page size (both clamped in the service).
+    public int Page {get; set;} = 1;
+    public int PageSize {get; set;} = 10;
+}
+
+
 public class ProductsDto
 {
     public required ulong Total {get; set;}
     public required List<ProductDto> Products {get; set;}
+
+    // Paging metadata, so the caller can render page controls. The effective
+    // (clamped) page and size are echoed back here.
+    public int Page {get; set;}
+    public int PageSize {get; set;}
+    public int TotalPages {get; set;}
 }
 
 public class UpdateProductDto

@@ -64,7 +64,10 @@ public class AccountController : BaseController
 
             HttpContext.Session.SetString(SessionKeys.AccessToken, token.AccessToken);
             HttpContext.Session.SetString(SessionKeys.RefreshToken, token.RefreshToken);
-            HttpContext.Session.SetString(SessionKeys.Email, payload.Email);
+            // The API stores emails lowercased, so show it the same way here
+            // rather than echoing back whatever casing was typed.
+            HttpContext.Session.SetString(
+                SessionKeys.Email, payload.Email.Trim().ToLowerInvariant());
 
             // Remember the roles so the menu can show the right links.
             List<string> roles = JwtHelper.GetRoles(token.AccessToken);

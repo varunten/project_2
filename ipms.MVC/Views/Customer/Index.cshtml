@@ -26,10 +26,12 @@
             </div>
 
             <div class="row">
+                @* Email is the sign-in identity, so it is shown but not editable.
+                   Disabled means the browser does not post it back at all. *@
                 <div class="col-md-6 mb-3">
-                    <label asp-for="Email" class="form-label">Email</label>
-                    <input asp-for="Email" class="form-control" placeholder="name@example.com" />
-                    <span asp-validation-for="Email" class="text-danger small d-block"></span>
+                    <label asp-for="Email" class="form-label text-muted">Email</label>
+                    <input asp-for="Email" class="form-control text-muted bg-body-secondary" disabled />
+                    <span class="form-text">Your email is used to sign in and cannot be changed here.</span>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label asp-for="PhoneNumber" class="form-label">Phone number</label>

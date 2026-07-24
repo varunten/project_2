@@ -53,9 +53,12 @@ public class AuthService : IAuthService
             );
 
 
+        string email = NormalizeEmail(payload.Email);
+
+
         bool exists =
             await _repository.UserExistsAsync(
-                payload.Email,
+                email,
                 payload.PhoneNumber
             );
 
@@ -72,7 +75,7 @@ public class AuthService : IAuthService
             FirstName = payload.FirstName,
             MiddleName = payload.MiddleName,
             LastName = payload.LastName,
-            Email = payload.Email,
+            Email = email,
             PhoneNumber = payload.PhoneNumber,
             PasswordHash =
                 _PasswordHasher.HashPassword(
@@ -116,7 +119,7 @@ public class AuthService : IAuthService
 
     public async Task<TokenDto> LoginAsync(AuthLoginDto payload)
 {
-    User? user = await _repository.GetUserByEmailAsync(payload.Email);
+    User? user = await _repository.GetUserByEmailAsync(NormalizeEmail(payload.Email));
 
     if (user is null)
     {
@@ -471,8 +474,10 @@ public async Task<UserDto> CreateStaffAsync(CreateStaffDto payload)
         );
 
 
+    string email = NormalizeEmail(payload.Email);
+
     bool exists = await _repository.UserExistsAsync(
-        payload.Email,
+        email,
         payload.PhoneNumber
     );
 
@@ -487,7 +492,7 @@ public async Task<UserDto> CreateStaffAsync(CreateStaffDto payload)
         FirstName = payload.FirstName,
         MiddleName = payload.MiddleName,
         LastName = payload.LastName,
-        Email = payload.Email,
+        Email = email,
         PhoneNumber = payload.PhoneNumber,
         PasswordHash = _PasswordHasher.HashPassword(null!, payload.Password)
     };
@@ -582,6 +587,14 @@ public async Task<List<string>> AssignRoleAsync(Guid userId, string role)
 
     // The user must log in again (or refresh) to get a token with the new role.
     return await _repository.GetUserRolesAsync(user.Id);
+}
+
+
+// Emails are stored and looked up in lowercase, so the same address always
+// maps to one account no matter how the user cased it when typing.
+public static string NormalizeEmail(string email)
+{
+    return email.Trim().ToLowerInvariant();
 }
 
 

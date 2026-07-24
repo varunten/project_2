@@ -6,6 +6,12 @@
     var isCustomer = roles.Contains(Roles.Customer);
     var isAdmin = roles.Contains(Roles.Admin);
     var isAgent = roles.Contains(Roles.InsuranceAgent);
+
+    // Optional call-to-action shown next to an error, so a message like
+    // "you need a customer profile" comes with the link that fixes it.
+    var errorLinkText = TempData["ErrorLinkText"] as string;
+    var errorLinkController = TempData["ErrorLinkController"] as string;
+    var errorLinkAction = TempData["ErrorLinkAction"] as string;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -131,7 +137,16 @@
             }
             @if (TempData["Error"] != null)
             {
-                <div class="container pt-3"><div class="alert alert-danger">@TempData["Error"]</div></div>
+                <div class="container pt-3">
+                    <div class="alert alert-danger">
+                        @TempData["Error"]
+                        @if (!string.IsNullOrEmpty(errorLinkText))
+                        {
+                            <a class="alert-link" asp-controller="@errorLinkController"
+                               asp-action="@errorLinkAction">@errorLinkText</a>
+                        }
+                    </div>
+                </div>
             }
             @RenderBody()
         }
@@ -144,7 +159,14 @@
                 }
                 @if (TempData["Error"] != null)
                 {
-                    <div class="alert alert-danger">@TempData["Error"]</div>
+                    <div class="alert alert-danger">
+                        @TempData["Error"]
+                        @if (!string.IsNullOrEmpty(errorLinkText))
+                        {
+                            <a class="alert-link" asp-controller="@errorLinkController"
+                               asp-action="@errorLinkAction">@errorLinkText</a>
+                        }
+                    </div>
                 }
 
                 @RenderBody()

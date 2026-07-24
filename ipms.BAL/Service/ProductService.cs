@@ -9,24 +9,49 @@ namespace IPMS.BAL.Service;
 
 public class ProductService : IProductService
 {
-    private readonly IProductRepository _repository;
+    // Page size is clamped to this range so a caller can't request the whole
+    // table (or a nonsensical size) in one go.
+    private const int MaxPageSize = 100;
+    private const int DefaultPageSize = 10;
 
-    public ProductService(IProductRepository repository)
+    private readonly IProductRepository _repository;
+    private readonly ICustomerRepository _customerRepository;
+
+    public ProductService(
+        IProductRepository repository,
+        ICustomerRepository customerRepository)
     {
         _repository = repository;
+        _customerRepository = customerRepository;
     }
 
 
-    public async Task<ProductsDto> GetProductsAsync()
+    public async Task<ProductsDto> GetProductsAsync(ProductQueryDto query, Guid userId, bool isCustomer)
     {
-        List<Product> products = await _repository.GetAllActiveAsync();
+        Normalize(query);
+
+        // Customers only see products their age is eligible for. A customer who
+        // hasn't set up a profile yet has no known age, so the age filter is
+        // skipped (they still can't request a quote until the profile exists).
+        int? customerAge = null;
+        if (isCustomer)
+        {
+            Customer? customer = await _customerRepository.GetActiveByUserIdAsync(userId);
+            if (customer is not null)
+                customerAge = AgeInYears(customer.DateOfBirth);
+        }
+
+        (List<Product> products, int total) = await _repository.QueryActiveAsync(query, customerAge);
 
         List<ProductDto> dtos = products.Select(MapToDto).ToList();
 
         return new ProductsDto
         {
-            Total = (ulong)dtos.Count,
-            Products = dtos
+            Total = (ulong)total,
+            Products = dtos,
+            Page = query.Page,
+            PageSize = query.PageSize,
+            TotalPages = total == 0 ? 0 : (int)Math.Ceiling(total / (double)query.PageSize)
         };
     }
 
@@ -118,6 +143,33 @@ public class ProductService : IProductService
         product.DeletedAt = DateTimeOffset.UtcNow;
 
         await _repository.SaveChangesAsync();
+    }
+
+
+    // Clamp paging to safe bounds so bad input can't skip the guard rails.
+    private static void Normalize(ProductQueryDto query)
+    {
+        if (query.Page < 1)
+            query.Page = 1;
+
+        if (query.PageSize < 1)
+            query.PageSize = DefaultPageSize;
+        else if (query.PageSize > MaxPageSize)
+            query.PageSize = MaxPageSize;
+    }
+
+
+    // Completed years between the date of birth and today (UTC).
+    private static int AgeInYears(DateOnly dateOfBirth)
+    {
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+        int age = today.Year - dateOfBirth.Year;
+
+        // Not had this year's birthday yet? Then one fewer completed year.
+        if (today < dateOfBirth.AddYears(age))
+            age--;
+
+        return age;
     }
 
 

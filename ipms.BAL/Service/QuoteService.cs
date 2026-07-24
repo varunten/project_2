@@ -50,6 +50,22 @@ public class QuoteService : IQuoteService
 
         DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
 
+        // Calculate age in completed years
+        int age = today.Year - customer.DateOfBirth.Year;
+
+        if (today < customer.DateOfBirth.AddYears(age))
+        {
+            age--;
+        }
+
+        // Validate age against product limits
+        if (age < product.MinAge || age > product.MaxAge)
+        {
+            throw new ValidationException(
+                $"Customer must be between {product.MinAge} and {product.MaxAge} years old."
+            );
+        }
+
         Quote quote = new()
         {
             QuoteNumber = $"QUO-{DateTime.UtcNow:yyyyMMddHHmmss}",

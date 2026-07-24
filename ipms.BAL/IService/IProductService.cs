@@ -5,7 +5,9 @@ namespace IPMS.BAL.IService;
 
 public interface IProductService
 {
-    Task<ProductsDto> GetProductsAsync();
+    // Browse the catalogue. When the caller is a customer, results are limited
+    // to products their current age is eligible for; staff see everything.
+    Task<ProductsDto> GetProductsAsync(ProductQueryDto query, Guid userId, bool isCustomer);
 
     Task<ProductDto> GetProductByIdAsync(Guid id);
 

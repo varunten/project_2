@@ -38,9 +38,6 @@ public class IpmsApiClient
     public Task<UserDto> CreateStaffAsync(CreateStaffDto payload) =>
         SendAsync<UserDto>(HttpMethod.Post, "api/auth/staff", payload);
 
-    public Task<List<string>> AssignRoleAsync(Guid userId, AssignRoleDto payload) =>
-        SendAsync<List<string>>(HttpMethod.Post, $"api/auth/users/{userId}/roles", payload);
-
     public Task<ProductDto> CreateProductAsync(CreateProductDto payload) =>
         SendAsync<ProductDto>(HttpMethod.Post, "api/product", payload);
 
@@ -59,8 +56,8 @@ public class IpmsApiClient
 
     // ---- Products ----
 
-    public Task<ProductsDto> GetProductsAsync() =>
-        SendAsync<ProductsDto>(HttpMethod.Get, "api/product");
+    public Task<ProductsDto> GetProductsAsync(ProductQueryDto query) =>
+        SendAsync<ProductsDto>(HttpMethod.Get, $"api/product{BuildProductQuery(query)}");
 
     public Task<ProductDto> GetProductAsync(Guid productId) =>
         SendAsync<ProductDto>(HttpMethod.Get, $"api/product/{productId}");
@@ -188,6 +185,29 @@ public class IpmsApiClient
         }
 
         return success.Data;
+    }
+
+
+    // Turn the product query into a "?a=b&c=d" string, encoding values and
+    // omitting anything not set so the URL stays clean.
+    private static string BuildProductQuery(ProductQueryDto query)
+    {
+        List<string> parts = [];
+
+        void Add(string key, string? value)
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+                parts.Add($"{key}={Uri.EscapeDataString(value)}");
+        }
+
+        Add("search", query.Search);
+        Add("type", query.Type?.ToString());
+        Add("sortBy", query.SortBy);
+        Add("sortDir", query.SortDir);
+        Add("page", query.Page.ToString());
+        Add("pageSize", query.PageSize.ToString());
+
+        return parts.Count == 0 ? "" : "?" + string.Join("&", parts);
     }
 
 

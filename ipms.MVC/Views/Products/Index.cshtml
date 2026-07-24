@@ -4,18 +4,86 @@
     var roles = (Context.Session.GetString(SessionKeys.Roles) ?? "").Split(',');
     var isCustomer = roles.Contains(Roles.Customer);
     var isAgent = roles.Contains(Roles.InsuranceAgent);
+
+    var q = ViewBag.Query as ProductQueryDto ?? new ProductQueryDto();
+    var sortBy = string.IsNullOrWhiteSpace(q.SortBy) ? "name" : q.SortBy.ToLowerInvariant();
+    var sortDir = string.Equals(q.SortDir, "desc", StringComparison.OrdinalIgnoreCase) ? "desc" : "asc";
+    var hasFilters = !string.IsNullOrWhiteSpace(q.Search) || q.Type.HasValue;
+    var pageSizes = new[] { 10, 20, 50 };
 }
 
 <div class="page-head">
     <div>
         <h2>Insurance products</h2>
-        <p class="page-sub">@Model.Total product(s) available to quote.</p>
+        <p class="page-sub">
+            @Model.Total product(s) available to quote.
+            @if (isCustomer)
+            {
+                <span>Showing products available for your age.</span>
+            }
+        </p>
     </div>
     @if (isAgent)
     {
         <a class="btn btn-teal" asp-controller="Products" asp-action="Create">+ Add product</a>
     }
 </div>
+
+@* Filter / sort bar. A GET form so the current selection lives in the URL and
+   is shareable/bookmarkable. Page resets to 1 on any change (no page field). *@
+<form method="get" asp-action="Index" class="panel mb-3">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label small">Search</label>
+            <input name="Search" value="@q.Search" class="form-control form-control-sm"
+                   placeholder="Product name" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label small">Type</label>
+            <select name="Type" class="form-select form-select-sm">
+                <option value="">All types</option>
+                @foreach (var t in Enum.GetValues<ProductType>())
+                {
+                    <option value="@t" selected="@(q.Type == t)">@t</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label small">Sort by</label>
+            <select name="SortBy" class="form-select form-select-sm">
+                <option value="name" selected="@(sortBy == "name")">Name</option>
+                <option value="premium" selected="@(sortBy == "premium")">Premium</option>
+                <option value="coverage" selected="@(sortBy == "coverage")">Coverage</option>
+                <option value="created" selected="@(sortBy == "created")">Newest</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label small">Order</label>
+            <select name="SortDir" class="form-select form-select-sm">
+                <option value="asc" selected="@(sortDir == "asc")">Ascending</option>
+                <option value="desc" selected="@(sortDir == "desc")">Descending</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <label class="form-label small">Per page</label>
+            <select name="PageSize" class="form-select form-select-sm">
+                @foreach (var size in pageSizes)
+                {
+                    <option value="@size" selected="@(q.PageSize == size)">@size</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-1 d-grid">
+            <button type="submit" class="btn btn-sm btn-teal">Apply</button>
+        </div>
+    </div>
+    @if (hasFilters)
+    {
+        <div class="mt-2">
+            <a asp-action="Index" class="small">Clear filters</a>
+        </div>
+    }
+</form>
 
 @if (Model.Total == 0)
 {
@@ -25,8 +93,21 @@
                 <path d="M12 2 3 6v6c0 5.25 3.75 8.25 9 10 5.25-1.75 9-4.75 9-10V6z" />
             </svg>
         </div>
-        <h5>No products yet</h5>
-        <p class="mb-0">There are no insurance products available right now.</p>
+        <h5>No products found</h5>
+        <p class="mb-0">
+            @if (hasFilters)
+            {
+                <text>No products match your filters. Try widening or clearing them.</text>
+            }
+            else if (isCustomer)
+            {
+                <text>There are no insurance products available for your age right now.</text>
+            }
+            else
+            {
+                <text>There are no insurance products available right now.</text>
+            }
+        </p>
     </div>
 }
 else
@@ -74,4 +155,34 @@ else
             </tbody>
         </table>
     </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="d-flex justify-content-between align-items-center mt-3">
+            <span class="text-muted small">Page @Model.Page of @Model.TotalPages</span>
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item @(Model.Page <= 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-search="@q.Search" asp-route-type="@q.Type"
+                       asp-route-sortBy="@q.SortBy" asp-route-sortDir="@q.SortDir"
+                       asp-route-pageSize="@q.PageSize" asp-route-page="@(Model.Page - 1)">Previous</a>
+                </li>
+                @for (int p = 1; p <= Model.TotalPages; p++)
+                {
+                    <li class="page-item @(p == Model.Page ? "active" : "")">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-search="@q.Search" asp-route-type="@q.Type"
+                           asp-route-sortBy="@q.SortBy" asp-route-sortDir="@q.SortDir"
+                           asp-route-pageSize="@q.PageSize" asp-route-page="@p">@p</a>
+                    </li>
+                }
+                <li class="page-item @(Model.Page >= Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-search="@q.Search" asp-route-type="@q.Type"
+                       asp-route-sortBy="@q.SortBy" asp-route-sortDir="@q.SortDir"
+                       asp-route-pageSize="@q.PageSize" asp-route-page="@(Model.Page + 1)">Next</a>
+                </li>
+            </ul>
+        </nav>
+    }
 }
