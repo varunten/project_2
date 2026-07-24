@@ -41,26 +41,46 @@
         <h6 class="text-uppercase text-muted small">Handled by</h6>
         <dl class="row mb-0">
             <dt class="col-6">Underwriter</dt>
-            <dd class="col-6"><small>@Model.UnderWriterId</small></dd>
+            <dd class="col-6">
+                @if (!string.IsNullOrEmpty(Model.UnderwriterName))
+                {
+                    <div>@Model.UnderwriterName</div>
+                    <small class="text-muted">@Model.UnderwriterEmail</small>
+                }
+                else
+                {
+                    <span class="text-muted">Unavailable</span>
+                }
+            </dd>
 
             <dt class="col-6">Insurance agent</dt>
-            <dd class="col-6"><small>@(Model.InsuranceAgentId?.ToString() ?? "Issued directly")</small></dd>
+            <dd class="col-6">
+                @if (!string.IsNullOrEmpty(Model.InsuranceAgentName))
+                {
+                    <div>@Model.InsuranceAgentName</div>
+                    <small class="text-muted">@Model.InsuranceAgentEmail</small>
+                }
+                else
+                {
+                    <span class="text-muted">Issued directly</span>
+                }
+            </dd>
         </dl>
     </div>
 
     <div class="col-md-6">
         <h6 class="text-uppercase text-muted small">Reference</h6>
         <dl class="row mb-0">
-            <dt class="col-6">Policy id</dt>
-            <dd class="col-6"><small>@Model.Id</small></dd>
+            <dt class="col-6">Policy number</dt>
+            <dd class="col-6"><small>@Model.PolicyNumber</small></dd>
 
             <dt class="col-6">From quote</dt>
-            <dd class="col-6"><small>@Model.QuoteId</small></dd>
+            <dd class="col-6"><small>@(Model.QuoteNumber ?? "-")</small></dd>
 
             @if (Model.PreviousPolicyId.HasValue)
             {
                 <dt class="col-6">Renewal of</dt>
-                <dd class="col-6"><small>@Model.PreviousPolicyId</small></dd>
+                <dd class="col-6"><small>@(Model.PreviousPolicyNumber ?? "-")</small></dd>
             }
 
             <dt class="col-6">Created</dt>

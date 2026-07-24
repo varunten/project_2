@@ -31,7 +31,7 @@ public class PoliciesController : BaseController
             if (ex.StatusCode == 401)
                 return RedirectToAction("Login", "Account");
 
-            TempData["Error"] = ex.Message;
+            SetApiError(ex);
             return View(new PoliciesDto { Total = 0, Policies = [] });
         }
     }
@@ -54,7 +54,7 @@ public class PoliciesController : BaseController
         }
         catch (ApiException ex)
         {
-            TempData["Error"] = ex.Message;
+            SetApiError(ex);
         }
 
         return RedirectToAction(nameof(Index));
@@ -75,7 +75,7 @@ public class PoliciesController : BaseController
         }
         catch (ApiException ex)
         {
-            TempData["Error"] = ex.Message;
+            SetApiError(ex);
         }
 
         return RedirectToAction(nameof(Index));

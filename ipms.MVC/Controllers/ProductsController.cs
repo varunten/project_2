@@ -17,14 +17,18 @@ public class ProductsController : BaseController
 
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index([FromQuery] ProductQueryDto query)
     {
         if (!IsLoggedIn)
             return RedirectToAction("Login", "Account");
 
+        // Echo the current filter/sort back to the view so the controls stay in
+        // sync and the pager can rebuild links that keep the same filters.
+        ViewBag.Query = query;
+
         try
         {
-            ProductsDto products = await _api.GetProductsAsync();
+            ProductsDto products = await _api.GetProductsAsync(query);
             return View(products);
         }
         catch (ApiException ex)
@@ -32,7 +36,7 @@ public class ProductsController : BaseController
             if (ex.StatusCode == 401)
                 return RedirectToAction("Login", "Account");
 
-            TempData["Error"] = ex.Message;
+            SetApiError(ex);
             return View(new ProductsDto { Total = 0, Products = [] });
         }
     }

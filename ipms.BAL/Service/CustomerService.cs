@@ -73,6 +73,12 @@ public class CustomerService : ICustomerService
         Customer customer = await _repository.GetActiveByUserIdAsync(userId)
             ?? throw new NotFoundException("You have not created a customer profile yet.");
 
+        // Email is the account's sign-in identity, so a customer cannot change
+        // it from their own profile. The form shows it read-only; dropping it
+        // here means a hand-crafted request cannot get around that either.
+        // Staff can still correct an address via UpdateCustomerAsync.
+        payload.Email = null;
+
         return await UpdateCustomerAsync(customer.Id, payload);
     }
 
@@ -136,7 +142,7 @@ public class CustomerService : ICustomerService
         if (payload.FirstName is not null) user.FirstName = payload.FirstName;
         if (payload.MiddleName is not null) user.MiddleName = payload.MiddleName;
         if (payload.LastName is not null) user.LastName = payload.LastName;
-        if (payload.Email is not null) user.Email = payload.Email;
+        if (payload.Email is not null) user.Email = AuthService.NormalizeEmail(payload.Email);
         if (payload.PhoneNumber is not null) user.PhoneNumber = payload.PhoneNumber;
 
         // Customer fields

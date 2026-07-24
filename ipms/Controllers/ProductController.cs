@@ -21,11 +21,15 @@ public class ProductController : ControllerBase
     }
 
 
-    // Any signed-in user can browse the catalogue.
+    // Any signed-in user can browse the catalogue, with optional filtering,
+    // sorting and paging. Customers are additionally limited to products their
+    // age is eligible for (handled in the service).
     [HttpGet]
-    public async Task<ActionResult<ApiResponse<ProductsDto>>> GetProducts()
+    public async Task<ActionResult<ApiResponse<ProductsDto>>> GetProducts([FromQuery] ProductQueryDto query)
     {
-        ProductsDto result = await _service.GetProductsAsync();
+        ProductsDto result = await _service.GetProductsAsync(
+            query, GetUserId(), User.IsInRole(Roles.Customer));
+
         return Ok(ApiResponse.Ok(result, "Products retrieved."));
     }
 

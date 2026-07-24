@@ -34,7 +34,7 @@ public class ClaimsController : BaseController
             if (ex.StatusCode == 401)
                 return RedirectToAction("Login", "Account");
 
-            TempData["Error"] = ex.Message;
+            SetApiError(ex);
             return View(new ClaimsDto { Total = 0, Claims = [] });
         }
     }
@@ -72,6 +72,14 @@ public class ClaimsController : BaseController
         }
         catch (ApiException ex)
         {
+            // Without a profile this form can never succeed, so point them at
+            // the page that fixes it instead of re-showing a dead-end form.
+            if (IsProfileMissing(ex))
+            {
+                SetProfileRequiredError();
+                return RedirectToAction("Index", "Policies");
+            }
+
             AddApiErrors(ex);
             return View(payload);
         }
@@ -119,7 +127,7 @@ public class ClaimsController : BaseController
         }
         catch (ApiException ex)
         {
-            TempData["Error"] = ex.Message;
+            SetApiError(ex);
         }
 
         return RedirectToAction(nameof(Index));
@@ -144,7 +152,7 @@ public class ClaimsController : BaseController
             if (ex.StatusCode == 401)
                 return RedirectToAction("Login", "Account");
 
-            TempData["Error"] = ex.Message;
+            SetApiError(ex);
             return View(new ClaimsDto { Total = 0, Claims = [] });
         }
     }
@@ -190,7 +198,7 @@ public class ClaimsController : BaseController
         }
         catch (ApiException ex)
         {
-            TempData["Error"] = ex.Message;
+            SetApiError(ex);
         }
 
         return RedirectToAction(nameof(Review));

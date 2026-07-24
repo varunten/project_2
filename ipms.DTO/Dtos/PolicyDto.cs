@@ -18,6 +18,14 @@ public class PolicyDto
     public Guid? InsuranceAgentId {get;set;}
     public required Guid UnderWriterId {get;set;}
     public required Guid CustomerId { get; set; }
+    // Friendly, non-identifying labels for display. Populated when a single
+    // policy is fetched for its details view; left null in list responses.
+    public string? UnderwriterName { get; set; }
+    public string? UnderwriterEmail { get; set; }
+    public string? InsuranceAgentName { get; set; }
+    public string? InsuranceAgentEmail { get; set; }
+    public string? QuoteNumber { get; set; }
+    public string? PreviousPolicyNumber { get; set; }
     public required decimal CoverageAmount { get; set; }
     public required decimal PremiumAmount { get; set; }
     public required DateOnly QuoteDate { get; set; }

@@ -72,7 +72,8 @@ else
                             }
                             @if (policy.Status != PolicyStatus.Cancelled)
                             {
-                                <form asp-action="Renew" asp-route-id="@policy.Id" method="post" class="d-inline">
+                                <form asp-action="Renew" asp-route-id="@policy.Id" method="post" class="d-inline"
+                                      onsubmit="return confirm('Renew policy @policy.PolicyNumber? This issues a new policy for a fresh term.');">
                                     <button type="submit" class="btn btn-sm btn-teal">Renew</button>
                                 </form>
                             }

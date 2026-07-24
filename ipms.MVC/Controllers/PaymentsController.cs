@@ -35,7 +35,7 @@ public class PaymentsController : BaseController
             if (ex.StatusCode == 401)
                 return RedirectToAction("Login", "Account");
 
-            TempData["Error"] = ex.Message;
+            SetApiError(ex);
             return RedirectToAction("Index", "Policies");
         }
     }
@@ -59,7 +59,7 @@ public class PaymentsController : BaseController
         }
         catch (ApiException ex)
         {
-            TempData["Error"] = ex.Message;
+            SetApiError(ex);
         }
 
         return RedirectToAction(nameof(Index), new { policyId });
